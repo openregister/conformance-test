@@ -5,7 +5,7 @@ A tool to search for [specification][] violations.  Requires Python 3.
 Usage:
 
     $ mkvirtualenv -p python3 conform
-    $ workon openregister
+    $ workon conform
     (openregister) $ pip install -r requirements.txt
     (openregister) $ py.test --endpoint https://url-of-register
 
