@@ -2,7 +2,7 @@ import pytest
 
 
 def pytest_addoption(parser):
-    parser.addoption("--endpoint", action="append", default=[],
+    parser.addoption("--endpoint", action="append",
         help="register endpoints to test")
 
 
