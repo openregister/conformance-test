@@ -15,4 +15,4 @@ class TestRegisterResourceJson(object):
     def test_content_fieldnames(self, response):
         assert 'entry-number' in response.json(), \
             '''Missing required field `entry-number`
-            Ref: http://openregister.github.io/specification/#entry-resource'''
+            Ref: http://openregister.github.io/specification/#assert-df4a8358'''
