@@ -7,7 +7,10 @@ Usage:
     $ mkvirtualenv -p python3 conform
     $ workon openregister
     (openregister) $ pip install -r requirements.txt
-    (openregister) $ conform https://url-of-register
+    (openregister) $ py.test --endpoint https://url-of-register
+
+You can pass more than one `--endpoint` parameter to test multiple
+registers.
 
 Note that passing all of the tests does not guarantee that you have a
 fully-conformant implementation.
