@@ -6,17 +6,16 @@ Usage:
 
     $ mkvirtualenv -p python3 conform
     $ workon conform
-    (openregister) $ pip install -r requirements.txt
-    (openregister) $ py.test --endpoint https://url-of-register
-
-You can pass more than one `--endpoint` parameter to test multiple
-registers.
+    (conform) $ pip install -e .
+    (conform) $ openregister-conformance https://url-of-register [https://another-register ...]
 
 There may be tests for future work that has not been implemented yet.
-These are marked with [`xfail`][xfail] annotations.  To force these
-tests to run, add the `--runxfail` parameter:
+These are marked with [`xfail`][xfail] annotations.  The
+`openregister-conformance` script currently runs these tests but does
+not worry if they fail.  To force these tests to run, run them with
+`py.test` using the `--runxfail` parameter:
 
-    py.test --runxfail --endpoint https://url-of-register
+    py.test --runxfail --endpoint https://url-of-register [--endpoint https://another-register ...]
 
 Note that passing all of the tests does not guarantee that you have a
 fully-conformant implementation.
