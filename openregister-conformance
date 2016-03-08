@@ -15,4 +15,4 @@ register_endpoint_args = [arg
 
 args = [base_dir] + register_endpoint_args
 
-pytest.main(args)
+raise SystemExit(pytest.main(args))
