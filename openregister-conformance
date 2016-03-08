@@ -25,6 +25,4 @@ for register in args.endpoint:
     print(register)
     pytest_args += ['--endpoint', register]
 
-print(pytest_args)
-
 raise SystemExit(pytest.main(pytest_args))
