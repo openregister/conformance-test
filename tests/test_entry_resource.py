@@ -3,7 +3,7 @@ import requests
 from urllib.parse import urljoin
 
 
-class TestRegisterResourceJson(object):
+class TestEntryResourceJson(object):
     @pytest.fixture
     def response(self, endpoint):
         return requests.get(urljoin(endpoint, 'entry/1.json'))
