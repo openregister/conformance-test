@@ -13,7 +13,6 @@ class TestEntryResourceJson(object):
     def test_content_type(self, response):
         assert response.headers['content-type'] == 'application/json'
 
-    @pytest.mark.xfail
     def test_response_contents(self, response):
         #This schema should always represent the response json specified at <http://openregister.github.io/specification/#entry-resource>
         entry_schema = {
@@ -25,7 +24,7 @@ class TestEntryResourceJson(object):
                 },
                 "item-hash": {
                     "type": "string",
-                    "pattern": "^sha-256:[a-z\d]+$"
+                    "pattern": "^sha-256:[a-f\d]{64}$"
                 },
                 "entry-timestamp": {
                     "type": "string",

@@ -28,7 +28,7 @@ class TestEntriesResourceJson(object):
                     },
                     "item-hash": {
                         "type": "string",
-                        "pattern": "^sha-256:[a-z\d]+$"
+                        "pattern": "^sha-256:[a-f\d]{64}$"
                     },
                     "entry-timestamp": {
                         "type": "string",
