@@ -1,6 +1,8 @@
 import pytest
 import requests
+
 from urllib.parse import urljoin
+from jsonschema import validate
 
 
 class TestEntryResourceJson(object):
@@ -11,8 +13,26 @@ class TestEntryResourceJson(object):
     def test_content_type(self, response):
         assert response.headers['content-type'] == 'application/json'
 
-    @pytest.mark.xfail
-    def test_content_fieldnames(self, response):
-        assert 'entry-number' in response.json(), \
-            '''Missing required field `entry-number`
-            Ref: http://openregister.github.io/specification/#assert-df4a8358'''
+    def test_response_contents(self, response):
+        #This schema should always represent the response json specified at <http://openregister.github.io/specification/#entry-resource>
+        entry_schema = {
+            "type": "object",
+            "properties": {
+                "entry-number": {
+                    "type": "string",
+                    "pattern": "^\d+$"
+                },
+                "item-hash": {
+                    "type": "string",
+                    "pattern": "^sha-256:[a-f\d]{64}$"
+                },
+                "entry-timestamp": {
+                    "type": "string",
+                    "pattern": "^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$"
+                }
+            },
+            "required": ["entry-number", "item-hash", "entry-timestamp"],
+            "additionalProperties": False
+        }
+
+        validate(response.json(), entry_schema)
