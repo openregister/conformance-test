@@ -39,7 +39,6 @@ class TestEntryResourceJson(object):
         validate(response.json(), ENTRY_SCHEMA)
 
 
-@pytest.mark.xfail
 class TestEntryResourceYaml(object):
     @pytest.fixture
     def response(self, endpoint):
