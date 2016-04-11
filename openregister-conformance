@@ -10,13 +10,13 @@ import pytest
 
 parser = argparse.ArgumentParser()
 parser.add_argument("endpoint", nargs="+", help="URL(s) of register to test")
+parser.add_argument("--register_register_endpoint", default="https://register.register.gov.uk", help="URL of register register")
 parser.add_argument("--no-https", help="suppress tests for HTTPS functionality", action="store_true")
 args = parser.parse_args()
 
 base_dir = os.path.dirname(os.path.realpath(__file__))
 
-
-pytest_args = [base_dir, '-q']
+pytest_args = [base_dir, '-q', '--register_register_endpoint', args.register_register_endpoint]
 
 if args.no_https:
     pytest_args += ['-m','not https']
