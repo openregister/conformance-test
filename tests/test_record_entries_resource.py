@@ -14,7 +14,7 @@ class TestRecordEntriesResourceJson(object):
 
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
 
-        return requests.get(urljoin(endpoint, '/record/%s' % item_json[register_name]))
+        return requests.get(urljoin(endpoint, '/record/%s/entries' % item_json[register_name]))
 
     @pytest.mark.xfail
     def test_content_type(self, response):
