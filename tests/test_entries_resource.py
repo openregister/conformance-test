@@ -1,3 +1,4 @@
+import csv
 import pytest
 import requests
 import yaml
@@ -5,8 +6,6 @@ import yaml
 from urllib.parse import urljoin
 from jsonschema import validate
 from werkzeug.http import parse_options_header
-
-#This schema should always represent the response json specified at <http://openregister.github.io/specification/#entries-resource>
 
 class TestEntriesResourceJson(object):
     @pytest.fixture
@@ -30,3 +29,17 @@ class TestEntriesResourceYaml(object):
 
     def test_response_contents(self, response, entries_schema):
         validate(yaml.load(response.text), entries_schema)
+
+class TestEntriesResourceCsv(object):
+    @pytest.fixture
+    def response(self, endpoint):
+        return requests.get(urljoin(endpoint, 'entries.csv'))
+
+    def test_content_type(self, response):
+        assert parse_options_header(response.headers['content-type']) \
+            == ('text/csv', {'charset':'UTF-8'})
+
+    def test_response_contents(self, response, entry_csv_schema):
+        problems = entry_csv_schema.validate(csv.reader(response.text.split('\r\n')))
+        assert problems == [], \
+            'There is a problem with Entries resource csv'

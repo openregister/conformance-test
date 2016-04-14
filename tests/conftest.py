@@ -1,5 +1,7 @@
 import pytest
 
+from csvvalidator import *
+
 
 def pytest_addoption(parser):
     parser.addoption("--endpoint", action="append",
@@ -60,3 +62,12 @@ def entries_schema():
             "additionalProperties": False
         }
     }
+    
+@pytest.fixture(scope="session")
+def entry_csv_schema():
+    validator = CSVValidator(('entry-number', 'item-hash', 'entry-timestamp'))
+    validator.add_header_check()
+    validator.add_value_check('entry-number', str, match_pattern('^\d+$'))
+    validator.add_value_check('item-hash', str, match_pattern('^sha-256:[a-f\d]{64}$'))
+    validator.add_value_check('entry-timestamp', str, match_pattern('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'))
+    return validator
