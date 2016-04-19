@@ -89,7 +89,37 @@ class TestRecordResourceCsv(object):
         assert parse_options_header(response.headers['content-type']) \
             == ('text/csv', {'charset':'UTF-8'})
 
-    def test_response_contents(self, response, endpoint, entry_schema):
+    def test_response_contents(self, response, endpoint):
+        csvSchema = RecordCsvSchema.get_schema(self,endpoint)
+        problems = csvSchema.validate(csv.reader(response.text.split('\r\n')))
+
+        assert problems == [], \
+            'There is a problem with Record resource csv'
+
+class TestRecordResourceTsv(object):
+    @pytest.fixture
+    def response(self, endpoint):
+        register_name = re.sub(r'http[s]?://([^\.]+)(.*)', r'\1', endpoint)
+
+        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
+
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+
+        return requests.get(urljoin(endpoint, '/record/%s.tsv' % item_json[register_name]))
+
+    def test_content_type(self, response):
+        assert parse_options_header(response.headers['content-type']) \
+            == ('text/tab-separated-values', {'charset':'UTF-8'})
+
+    def test_response_contents(self, response, endpoint):
+        tsvSchema = RecordCsvSchema.get_schema(self, endpoint)
+        problems = tsvSchema.validate(csv.reader(response.text.split('\n'), delimiter='\t'))
+
+        assert problems == [], \
+            'There is a problem with Record resource tsv'
+
+class RecordCsvSchema:
+    def get_schema(self, endpoint):
         field_names = ['entry-number', 'item-hash', 'entry-timestamp']
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['record']['entry']['fields']
@@ -100,7 +130,4 @@ class TestRecordResourceCsv(object):
         validator.add_value_check('entry-number', str, match_pattern('^\d+$'))
         validator.add_value_check('item-hash', str, match_pattern('^sha-256:[a-f\d]{64}$'))
         validator.add_value_check('entry-timestamp', str, match_pattern('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'))
-        problems = validator.validate(csv.reader(response.text.split('\r\n')))
-
-        assert problems == [], \
-            'There is a problem with Record resource csv'
+        return validator
