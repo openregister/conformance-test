@@ -43,3 +43,17 @@ class TestEntriesResourceCsv(object):
         problems = entry_csv_schema.validate(csv.reader(response.text.split('\r\n')))
         assert problems == [], \
             'There is a problem with Entries resource csv'
+
+class TestEntriesResourceTsv(object):
+    @pytest.fixture
+    def response(self, endpoint):
+        return requests.get(urljoin(endpoint, 'entries.tsv'))
+
+    def test_content_type(self, response):
+        assert parse_options_header(response.headers['content-type']) \
+            == ('text/tab-separated-values', {'charset':'UTF-8'})
+
+    def test_response_contents(self, response, entry_csv_schema):
+        problems = entry_csv_schema.validate(csv.reader(response.text.split('\n'), delimiter='\t'))
+        assert problems == [], \
+            'There is a problem with Entries resource tsv'
