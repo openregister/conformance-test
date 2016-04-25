@@ -19,7 +19,7 @@ class TestItemResourceJson(object):
 
     def test_response_contents(self, response, endpoint):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
-        register_fields = register_data.json()['record']['entry']['fields']
+        register_fields = register_data.json()['register-record']['fields']
 
         assert set(response.json().keys()).issubset(register_fields), \
             'Item json does not match fields specified in regsiter register'
@@ -38,7 +38,7 @@ class TestItemResourceYaml(object):
 
     def test_response_contents(self, response, endpoint):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
-        register_fields = register_data.json()['record']['entry']['fields']
+        register_fields = register_data.json()['register-record']['fields']
 
         assert set(yaml.load(response.text).keys()).issubset(register_fields), \
             'Item json does not match fields specified in regsiter register'
@@ -90,7 +90,7 @@ class TestItemResourceTsv(object):
 class RecordCsvSchema:
     def get_schema(self, endpoint):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
-        register_fields = register_data.json()['record']['entry']['fields']
+        register_fields = register_data.json()['register-record']['fields']
 
         validator = CSVValidator(register_fields)
         validator.add_header_check()
