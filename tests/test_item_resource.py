@@ -1,7 +1,6 @@
 import csv
 import pytest
 import requests
-import re
 import yaml
 
 from csvvalidator import *
