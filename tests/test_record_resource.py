@@ -36,7 +36,7 @@ class TestRecordResourceJson(object):
 
         register_data = requests.get(urljoin(endpoint, '/register.json'))
 
-        register_fields = register_data.json()['record']['entry']['fields']
+        register_fields = register_data.json()['register-record']['fields']
 
         assert set(record_json.keys()).issubset(register_fields), \
             'Record contains unrecognized keys'
@@ -69,7 +69,7 @@ class TestRecordResourceYaml(object):
 
         register_data = requests.get(urljoin(endpoint, '/register.json'))
 
-        register_fields = register_data.json()['record']['entry']['fields']
+        register_fields = register_data.json()['register-record']['fields']
 
         assert set(record_yaml.keys()).issubset(register_fields), \
             'Record contains unrecognized keys'
@@ -122,7 +122,7 @@ class RecordCsvSchema:
     def get_schema(self, endpoint):
         field_names = ['entry-number', 'item-hash', 'entry-timestamp']
         register_data = requests.get(urljoin(endpoint, '/register.json'))
-        register_fields = register_data.json()['record']['entry']['fields']
+        register_fields = register_data.json()['register-record']['fields']
         field_names += register_fields
 
         validator = CSVValidator(field_names)
