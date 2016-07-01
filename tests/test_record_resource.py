@@ -120,7 +120,7 @@ class TestRecordResourceTsv(object):
 
 class RecordCsvSchema:
     def get_schema(self, endpoint):
-        field_names = ['entry-number', 'item-hash', 'entry-timestamp']
+        field_names = ['entry-number', 'entry-timestamp', 'item-hash']
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
         field_names += register_fields
