@@ -65,7 +65,7 @@ def entries_schema():
     
 @pytest.fixture(scope="session")
 def entry_csv_schema():
-    validator = CSVValidator(('entry-number', 'item-hash', 'entry-timestamp'))
+    validator = CSVValidator(('entry-number', 'entry-timestamp', 'item-hash'))
     validator.add_header_check()
     validator.add_value_check('entry-number', str, match_pattern('^\d+$'))
     validator.add_value_check('item-hash', str, match_pattern('^sha-256:[a-f\d]{64}$'))
