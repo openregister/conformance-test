@@ -27,8 +27,8 @@ class TestRecordEntriesResourceJson(object):
 
 class TestRecordEntriesResourceYaml(object):
     @pytest.fixture
-    def response(self, endpoint):
-        register_name = re.sub(r'http[s]?://([^\.]+)(.*)', r'\1', endpoint)
+    def response(self, endpoint, register):
+        register_name = register
 
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
 
