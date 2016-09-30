@@ -11,8 +11,8 @@ from werkzeug.http import parse_options_header
 
 class TestRecordResourceJson(object):
     @pytest.fixture
-    def response(self, endpoint):
-        register_name = re.sub(r'http[s]?://([^\.]+)(.*)', r'\1', endpoint)
+    def response(self, endpoint, register):
+        register_name = register
 
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
 
@@ -43,8 +43,8 @@ class TestRecordResourceJson(object):
 
 class TestRecordResourceYaml(object):
     @pytest.fixture
-    def response(self, endpoint):
-        register_name = re.sub(r'http[s]?://([^\.]+)(.*)', r'\1', endpoint)
+    def response(self, endpoint, register):
+        register_name = register
 
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
 
@@ -76,8 +76,8 @@ class TestRecordResourceYaml(object):
 
 class TestRecordResourceCsv(object):
     @pytest.fixture
-    def response(self, endpoint):
-        register_name = re.sub(r'http[s]?://([^\.]+)(.*)', r'\1', endpoint)
+    def response(self, endpoint, register):
+        register_name = register
 
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
 
@@ -98,8 +98,8 @@ class TestRecordResourceCsv(object):
 
 class TestRecordResourceTsv(object):
     @pytest.fixture
-    def response(self, endpoint):
-        register_name = re.sub(r'http[s]?://([^\.]+)(.*)', r'\1', endpoint)
+    def response(self, endpoint, register):
+        register_name = register
 
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
 

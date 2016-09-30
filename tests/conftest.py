@@ -7,12 +7,17 @@ def pytest_addoption(parser):
     parser.addoption("--endpoint", action="append",
                      help="register endpoints to test")
 
+    parser.addoption("--register", action="append", help="Name of register")
+
+
 
 def pytest_generate_tests(metafunc):
     if 'endpoint' in metafunc.fixturenames:
         metafunc.parametrize("endpoint",
                              metafunc.config.option.endpoint)
 
+    if 'register' in metafunc.fixturenames:
+        metafunc.parametrize("register", metafunc.config.option.register)
 
 @pytest.fixture(scope="session")
 def entry_schema():
