@@ -7,7 +7,7 @@ def pytest_addoption(parser):
     parser.addoption("--endpoint", action="append",
                      help="register endpoints to test")
 
-    parser.addoption("--register", help="Name of register")
+    parser.addoption("--register", action="append", help="Name of register")
 
 
 
