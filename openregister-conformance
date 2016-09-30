@@ -22,9 +22,8 @@ pytest_args = [base_dir, '-q']
 if args.no_https:
     pytest_args += ['-m','not https']
 
-for register_base in args.endpoint:
-    print(register_base)
-    pytest_args += ['--endpoint', register_base]
+print(args.endpoint)
+pytest_args += ['--endpoint', args.endpoint]
 
 pytest_args += ['--register', args.register]
 
