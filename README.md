@@ -6,8 +6,11 @@ Usage:
 
     $ mkvirtualenv -p python3 conform
     $ workon conform
-    (conform) $ pip install -e .
+    (conform) $ pip install -e . -r requirements.txt
     (conform) $ openregister-conformance https://url-of-register [https://another-register ...]
+
+Example of running tests against `localhost`:
+    openregister-conformance', '--no-https', '--register', 'school', 'http://localhost:9090'
 
 There may be tests for future work that has not been implemented yet.
 These are marked with [`xfail`][xfail] annotations.  The
