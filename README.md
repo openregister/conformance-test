@@ -10,7 +10,7 @@ Usage:
     (conform) $ openregister-conformance https://url-of-register [https://another-register ...]
 
 Example of running tests against `localhost`:
-    openregister-conformance', '--no-https', '--register', 'school', 'http://localhost:9090'
+    openregister-conformance --no-https --register school http://localhost:8080
 
 There may be tests for future work that has not been implemented yet.
 These are marked with [`xfail`][xfail] annotations.  The
