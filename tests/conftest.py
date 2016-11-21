@@ -37,12 +37,12 @@ def entry_schema():
                 "type": "string",
                 "pattern": "^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$"
             },
-            "item-key": {
+            "key": {
                 "type": "string",
                 "pattern": ".+"
             }
         },
-        "required": ["entry-number", "item-hash", "entry-timestamp", "item-key"],
+        "required": ["entry-number", "item-hash", "entry-timestamp", "key"],
         "additionalProperties": False
     }
 
@@ -66,22 +66,22 @@ def entries_schema():
                     "type": "string",
                     "pattern": "^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$"
                 },
-                "item-key": {
+                "key": {
                     "type": "string",
                     "pattern": ".+"
                 }
             },
-            "required": ["entry-number", "item-hash", "entry-timestamp", "item-key"],
+            "required": ["entry-number", "item-hash", "entry-timestamp", "key"],
             "additionalProperties": False
         }
     }
     
 @pytest.fixture(scope="session")
 def entry_csv_schema():
-    validator = CSVValidator(('entry-number', 'entry-timestamp', 'item-hash', 'item-key'))
+    validator = CSVValidator(('entry-number', 'entry-timestamp', 'item-hash', 'key'))
     validator.add_header_check()
     validator.add_value_check('entry-number', str, match_pattern('^\d+$'))
     validator.add_value_check('item-hash', str, match_pattern('^sha-256:[a-f\d]{64}$'))
     validator.add_value_check('entry-timestamp', str, match_pattern('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'))
-    validator.add_value_check('item-key', str, match_pattern('.+'))
+    validator.add_value_check('key', str, match_pattern('.+'))
     return validator
