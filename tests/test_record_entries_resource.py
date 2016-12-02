@@ -1,15 +1,11 @@
 import csv
 import pytest
 import requests
-import re
 import yaml
-import rdflib
 
 from urllib.parse import urljoin
 from jsonschema import validate
 from werkzeug.http import parse_options_header
-from rdflib.graph import Graph
-from rdflib.namespace import Namespace
 
 class TestRecordEntriesResourceJson(object):
     @pytest.fixture
@@ -101,24 +97,10 @@ class TestRecordEntriesResourceTtl(object):
         assert parse_options_header(response.headers['content-type']) \
             == ('text/turtle', {'charset':'UTF-8'})
 
-    def test_response_contents(self, response, endpoint):
-        graph = Graph()
-        graph.parse(data=response.text, format="turtle")
-
-        specification = Namespace('https://openregister.github.io/specification/#')
-
-        predicateRegexMap = {
-            "entry-number-field": re.compile('^\d+$'),
-            "entry-timestamp-field": re.compile('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'),
-            "item-resource": re.compile('/item/sha-256:[a-f\d]{64}$'),
-            "key-field": re.compile('.+')
-        }
-
-        problems = []
-
-        for p, r in predicateRegexMap.items():
-            objects = list(graph.objects(subject=None, predicate=specification[p]))
-            problems.extend(v for k, v in enumerate(objects) if r.search(v) is None)
+    def test_response_contents(self, response, entry_ttl_schema):
+        namespace = 'https://openregister.github.io/specification/#'
+        entry_ttl_schema.add_data(response.text)
+        problems = entry_ttl_schema.validateDataMatchesFieldDataTypes(namespace)
 
         assert problems == [], \
             'There is a problem with Record Entries resource ttl'

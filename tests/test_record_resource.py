@@ -1,16 +1,12 @@
 import csv
 import pytest
 import requests
-import re
 import yaml
-import rdflib
 
 from csvvalidator import *
 from jsonschema import validate
 from urllib.parse import urljoin
 from werkzeug.http import parse_options_header
-from rdflib.graph import Graph
-from rdflib.namespace import Namespace
 
 class TestRecordResourceJson(object):
     @pytest.fixture
@@ -138,45 +134,19 @@ class TestRecordResourceTtl(object):
         assert parse_options_header(response.headers['content-type']) \
             == ('text/turtle', {'charset':'UTF-8'})
 
-    def test_response_contents(self, response, endpoint):
-        graph = Graph()
-        graph.parse(data=response.text, format="turtle")
+    def test_response_contents(self, response, endpoint, entry_ttl_schema):
+        fieldNs = 'http://field.openregister.dev:8080/record/'
+        specificationNs = 'https://openregister.github.io/specification/#'
 
-        specificationNs = Namespace('https://openregister.github.io/specification/#')
-        fieldNs = Namespace('http://field.openregister.dev:8080/record/')
-
-        predicateRegexMap = {
-            "entry-number-field": re.compile('^\d+$'),
-            "entry-timestamp-field": re.compile('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'),
-            "item-resource": re.compile('/item/sha-256:[a-f\d]{64}$'),
-            "key-field": re.compile('.+')
-        }
-
-        problems = []
-
-        # Get expected fields
         register_data = requests.get(urljoin(endpoint, '/register.json'))
-        register_fields = [fieldNs[f] for f in register_data.json()['register-record']['fields']]
-        register_fields.extend(specificationNs[f] for f in predicateRegexMap.keys())
+        register_fields = register_data.json()['register-record']['fields']
 
-        print('Fields')
-        for i in register_fields:
-            print(i);
-        print('-----')
+        entry_ttl_schema.add_data(response.text)
+        entry_ttl_schema.add_fields(fieldNs, register_fields)
+        entry_ttl_schema.addEntryFieldsToValidation(specificationNs)
+        problems = entry_ttl_schema.validateFieldsExist()
+        problems.extend(p for p in entry_ttl_schema.validateDataMatchesFieldDataTypes(specificationNs))
 
-        print('Fields')
-        for i in graph.predicates():
-            print(i);
-        print('-----')
-
-        # Check for existence of expected fields
-        problems.extend(p for p in graph.predicates() if p not in register_fields)
-
-        for p, r in predicateRegexMap.items():
-            objects = list(graph.objects(subject=None, predicate=specificationNs[p]))
-            problems.extend(v for k, v in enumerate(objects) if r.search(v) is None)
-
-        # problems.append('T')
         assert problems == [], \
             'There is a problem with Record resource ttl'
 
