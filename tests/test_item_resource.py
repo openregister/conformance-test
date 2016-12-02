@@ -2,16 +2,19 @@ import csv
 import pytest
 import requests
 import yaml
+import rdflib
+import re
 
 from csvvalidator import *
 from urllib.parse import urljoin
 from werkzeug.http import parse_options_header
+from rdflib.graph import Graph
+from rdflib.namespace import Namespace
 
 class TestItemResourceJson(object):
     @pytest.fixture
     def response(self, endpoint):
         entry = requests.get(urljoin(endpoint, 'entry/1.json'))
-
         item_hash = entry.json()['item-hash']
 
         return requests.get(urljoin(endpoint, 'item/' + item_hash + '.json'))
@@ -30,7 +33,6 @@ class TestItemResourceYaml(object):
     @pytest.fixture
     def response(self, endpoint):
         entry = requests.get(urljoin(endpoint, 'entry/1.json'))
-
         item_hash = entry.json()['item-hash']
 
         return requests.get(urljoin(endpoint, 'item/' + item_hash + '.yaml'))
@@ -50,7 +52,6 @@ class TestItemResourceCsv(object):
     @pytest.fixture
     def response(self, endpoint):
         entry = requests.get(urljoin(endpoint, 'entry/1.json'))
-
         item_hash = entry.json()['item-hash']
 
         return requests.get(urljoin(endpoint, 'item/' + item_hash + '.csv'))
@@ -70,7 +71,6 @@ class TestItemResourceTsv(object):
     @pytest.fixture
     def response(self, endpoint):
         entry = requests.get(urljoin(endpoint, 'entry/1.json'))
-
         item_hash = entry.json()['item-hash']
 
         return requests.get(urljoin(endpoint, 'item/' + item_hash + '.tsv'))
@@ -85,6 +85,36 @@ class TestItemResourceTsv(object):
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
             == ('text/tab-separated-values', {'charset':'UTF-8'})
+
+class TestItemResourceTtl(object):
+    @pytest.fixture
+    def response(self, endpoint):
+        entry = requests.get(urljoin(endpoint, 'entry/1.json'))
+        item_hash = entry.json()['item-hash']
+
+        return requests.get(urljoin(endpoint, 'item/' + item_hash + '.ttl'))
+
+    def test_response_contents(self, response, endpoint):
+        graph = Graph()
+        graph.parse(data=response.text, format="turtle")
+
+        specification = Namespace('http://field.openregister.dev:8080/record/')
+
+        # Get expected fields
+        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_fields = [specification[f] for f in register_data.json()['register-record']['fields']]
+
+        actualFields = list(graph.predicates())
+
+        problems = []
+        problems.extend(p for p in graph.predicates() if p not in register_fields)
+
+        assert problems == [], \
+            'There is a problem with Item resource ttl'
+
+    def test_content_type(self, response):
+        assert parse_options_header(response.headers['content-type']) \
+            == ('text/turtle', {'charset':'UTF-8'})
 
 class RecordCsvSchema:
     def get_schema(self, endpoint):

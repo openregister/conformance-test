@@ -71,7 +71,7 @@ class TestEntriesResourceTtl(object):
         assert parse_options_header(response.headers['content-type']) \
             == ('text/turtle', {'charset':'UTF-8'})
 
-    def test_response_contents(self, endpoint, response, entries_schema):
+    def test_response_contents(self, response, entries_schema):
         graph = Graph()
         graph.parse(data=response.text, format="turtle")
 

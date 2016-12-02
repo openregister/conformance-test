@@ -3,11 +3,14 @@ import pytest
 import requests
 import re
 import yaml
+import rdflib
 
 from csvvalidator import *
 from jsonschema import validate
 from urllib.parse import urljoin
 from werkzeug.http import parse_options_header
+from rdflib.graph import Graph
+from rdflib.namespace import Namespace
 
 class TestRecordResourceJson(object):
     @pytest.fixture
@@ -119,6 +122,63 @@ class TestRecordResourceTsv(object):
 
         assert problems == [], \
             'There is a problem with Record resource tsv'
+
+class TestRecordResourceTtl(object):
+    @pytest.fixture
+    def response(self, endpoint, register):
+        register_name = register
+
+        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
+
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+
+        return requests.get(urljoin(endpoint, '/record/%s.ttl' % item_json[register_name]))
+
+    def test_content_type(self, response):
+        assert parse_options_header(response.headers['content-type']) \
+            == ('text/turtle', {'charset':'UTF-8'})
+
+    def test_response_contents(self, response, endpoint):
+        graph = Graph()
+        graph.parse(data=response.text, format="turtle")
+
+        specificationNs = Namespace('https://openregister.github.io/specification/#')
+        fieldNs = Namespace('http://field.openregister.dev:8080/record/')
+
+        predicateRegexMap = {
+            "entry-number-field": re.compile('^\d+$'),
+            "entry-timestamp-field": re.compile('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'),
+            "item-resource": re.compile('/item/sha-256:[a-f\d]{64}$'),
+            "key-field": re.compile('.+')
+        }
+
+        problems = []
+
+        # Get expected fields
+        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_fields = [fieldNs[f] for f in register_data.json()['register-record']['fields']]
+        register_fields.extend(specificationNs[f] for f in predicateRegexMap.keys())
+
+        print('Fields')
+        for i in register_fields:
+            print(i);
+        print('-----')
+
+        print('Fields')
+        for i in graph.predicates():
+            print(i);
+        print('-----')
+
+        # Check for existence of expected fields
+        problems.extend(p for p in graph.predicates() if p not in register_fields)
+
+        for p, r in predicateRegexMap.items():
+            objects = list(graph.objects(subject=None, predicate=specificationNs[p]))
+            problems.extend(v for k, v in enumerate(objects) if r.search(v) is None)
+
+        # problems.append('T')
+        assert problems == [], \
+            'There is a problem with Record resource ttl'
 
 class RecordCsvSchema:
     def get_schema(self, endpoint):

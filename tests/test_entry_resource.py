@@ -2,10 +2,14 @@ import csv
 import pytest
 import requests
 import yaml
+import rdflib
+import re
 
 from jsonschema import validate
 from urllib.parse import urljoin
 from werkzeug.http import parse_options_header
+from rdflib.graph import Graph
+from rdflib.namespace import Namespace
 
 class TestEntryResourceJson(object):
     @pytest.fixture
@@ -57,4 +61,35 @@ class TestEntryResourceTsv(object):
         problems = entry_csv_schema.validate(csv.reader(response.text.split('\n'), delimiter='\t'))
         assert problems == [], \
             'There is a problem with Entry resource tsv'
+
+class TestEntryResourceTtl(object):
+    @pytest.fixture
+    def response(self, endpoint):
+        return requests.get(urljoin(endpoint, 'entry/1.ttl'))
+
+    def test_content_type(self, response):
+        assert parse_options_header(response.headers['content-type']) \
+            == ('text/turtle', {'charset':'UTF-8'})
+
+    def test_response_contents(self, response, entries_schema):
+        graph = Graph()
+        graph.parse(data=response.text, format="turtle")
+
+        specification = Namespace('https://openregister.github.io/specification/#')
+
+        predicateRegexMap = {
+            "entry-number-field": re.compile('^\d+$'),
+            "entry-timestamp-field": re.compile('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'),
+            "item-resource": re.compile('/item/sha-256:[a-f\d]{64}$'),
+            "key-field": re.compile('.+')
+        }
+
+        problems = []
+
+        for p, r in predicateRegexMap.items():
+            objects = list(graph.objects(subject=None, predicate=specification[p]))
+            problems.extend(v for k, v in enumerate(objects) if r.search(v) is None)
+
+        assert problems == [], \
+            'There is a problem with Entry resource ttl'
 
