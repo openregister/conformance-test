@@ -29,7 +29,8 @@ class TestRecordResourceJson(object):
         entry_part = {
             'entry-number': record_json.pop('entry-number'),
             'item-hash': record_json.pop('item-hash'),
-            'entry-timestamp': record_json.pop('entry-timestamp')
+            'entry-timestamp': record_json.pop('entry-timestamp'),
+            'key': record_json.pop('key')
         }
 
         validate(entry_part, entry_schema)
@@ -62,7 +63,8 @@ class TestRecordResourceYaml(object):
         entry_part = {
             'entry-number': record_yaml.pop('entry-number'),
             'item-hash': record_yaml.pop('item-hash'),
-            'entry-timestamp': record_yaml.pop('entry-timestamp')
+            'entry-timestamp': record_yaml.pop('entry-timestamp'),
+            'key': record_yaml.pop('key')
         }
 
         validate(entry_part, entry_schema)
@@ -120,7 +122,7 @@ class TestRecordResourceTsv(object):
 
 class RecordCsvSchema:
     def get_schema(self, endpoint):
-        field_names = ['entry-number', 'entry-timestamp', 'item-hash']
+        field_names = ['entry-number', 'entry-timestamp', 'item-hash', 'key']
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
         field_names += register_fields
@@ -130,4 +132,5 @@ class RecordCsvSchema:
         validator.add_value_check('entry-number', str, match_pattern('^\d+$'))
         validator.add_value_check('item-hash', str, match_pattern('^sha-256:[a-f\d]{64}$'))
         validator.add_value_check('entry-timestamp', str, match_pattern('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'))
+        validator.add_value_check('key', str, match_pattern('.+'))
         return validator
