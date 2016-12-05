@@ -4,3 +4,5 @@ __pycache__
 *.pyc
 .eggs
 *.egg-info
+.idea
+*.egg
