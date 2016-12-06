@@ -6,3 +6,4 @@ PyYAML==3.11
 requests==2.9.1
 jsonschema==2.5.1
 Werkzeug==0.11.5
+rdflib==4.2.1

@@ -1,7 +1,7 @@
 import pytest
 
 from csvvalidator import *
-
+from ttlvalidator import TtlValidator
 
 def pytest_addoption(parser):
     parser.addoption("--endpoint", action="append",
@@ -85,3 +85,13 @@ def entry_csv_schema():
     validator.add_value_check('entry-timestamp', str, match_pattern('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'))
     validator.add_value_check('key', str, match_pattern('.+'))
     return validator
+
+@pytest.fixture(scope="session")
+def entry_ttl_schema():
+    validator = TtlValidator()
+    validator.add_entry_regex('entry-number-field', '^\d+$')
+    validator.add_entry_regex('entry-timestamp-field', '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$')
+    validator.add_entry_regex('item-resource', '/item/sha-256:[a-f\d]{64}$')
+    validator.add_entry_regex('key-field', '.+')
+    return validator
+

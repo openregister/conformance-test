@@ -1,7 +1,6 @@
 import csv
 import pytest
 import requests
-import re
 import yaml
 
 from csvvalidator import *
@@ -119,6 +118,37 @@ class TestRecordResourceTsv(object):
 
         assert problems == [], \
             'There is a problem with Record resource tsv'
+
+class TestRecordResourceTtl(object):
+    @pytest.fixture
+    def response(self, endpoint, register):
+        register_name = register
+
+        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
+
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+
+        return requests.get(urljoin(endpoint, '/record/%s.ttl' % item_json[register_name]))
+
+    def test_content_type(self, response):
+        assert parse_options_header(response.headers['content-type']) \
+            == ('text/turtle', {'charset':'UTF-8'})
+
+    def test_response_contents(self, response, endpoint, entry_ttl_schema):
+        fieldNs = 'http://field.openregister.dev:8080/record/'
+        specificationNs = 'https://openregister.github.io/specification/#'
+
+        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_fields = register_data.json()['register-record']['fields']
+
+        entry_ttl_schema.add_data(response.text)
+        entry_ttl_schema.add_fields(fieldNs, register_fields)
+        entry_ttl_schema.addEntryFieldsToValidation(specificationNs)
+        problems = entry_ttl_schema.validateFieldsExist()
+        problems.extend(p for p in entry_ttl_schema.validateDataMatchesFieldDataTypes(specificationNs))
+
+        assert problems == [], \
+            'There is a problem with Record resource ttl'
 
 class RecordCsvSchema:
     def get_schema(self, endpoint):

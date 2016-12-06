@@ -11,7 +11,6 @@ class TestItemResourceJson(object):
     @pytest.fixture
     def response(self, endpoint):
         entry = requests.get(urljoin(endpoint, 'entry/1.json'))
-
         item_hash = entry.json()['item-hash']
 
         return requests.get(urljoin(endpoint, 'item/' + item_hash + '.json'))
@@ -30,7 +29,6 @@ class TestItemResourceYaml(object):
     @pytest.fixture
     def response(self, endpoint):
         entry = requests.get(urljoin(endpoint, 'entry/1.json'))
-
         item_hash = entry.json()['item-hash']
 
         return requests.get(urljoin(endpoint, 'item/' + item_hash + '.yaml'))
@@ -50,7 +48,6 @@ class TestItemResourceCsv(object):
     @pytest.fixture
     def response(self, endpoint):
         entry = requests.get(urljoin(endpoint, 'entry/1.json'))
-
         item_hash = entry.json()['item-hash']
 
         return requests.get(urljoin(endpoint, 'item/' + item_hash + '.csv'))
@@ -70,7 +67,6 @@ class TestItemResourceTsv(object):
     @pytest.fixture
     def response(self, endpoint):
         entry = requests.get(urljoin(endpoint, 'entry/1.json'))
-
         item_hash = entry.json()['item-hash']
 
         return requests.get(urljoin(endpoint, 'item/' + item_hash + '.tsv'))
@@ -85,6 +81,30 @@ class TestItemResourceTsv(object):
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
             == ('text/tab-separated-values', {'charset':'UTF-8'})
+
+class TestItemResourceTtl(object):
+    @pytest.fixture
+    def response(self, endpoint):
+        entry = requests.get(urljoin(endpoint, 'entry/1.json'))
+        item_hash = entry.json()['item-hash']
+
+        return requests.get(urljoin(endpoint, 'item/' + item_hash + '.ttl'))
+
+    def test_response_contents(self, response, endpoint, entry_ttl_schema):
+        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_fields = register_data.json()['register-record']['fields']
+
+        namespace = 'http://field.openregister.dev:8080/record/'
+        entry_ttl_schema.add_data(response.text)
+        entry_ttl_schema.add_fields(namespace, register_fields)
+        problems = entry_ttl_schema.validateFieldsExist()
+
+        assert problems == [], \
+            'There is a problem with Item resource ttl'
+
+    def test_content_type(self, response):
+        assert parse_options_header(response.headers['content-type']) \
+            == ('text/turtle', {'charset':'UTF-8'})
 
 class RecordCsvSchema:
     def get_schema(self, endpoint):

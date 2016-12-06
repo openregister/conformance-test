@@ -1,7 +1,6 @@
 import csv
 import pytest
 import requests
-import re
 import yaml
 
 from urllib.parse import urljoin
@@ -82,3 +81,26 @@ class TestRecordEntriesResourceTsv(object):
         problems = entry_csv_schema.validate(csv.reader(response.text.split('\n'), delimiter='\t'))
         assert problems == [], \
             'There is a problem with Record Entries resource tsv'
+
+class TestRecordEntriesResourceTtl(object):
+    @pytest.fixture
+    def response(self, endpoint, register):
+        register_name = register
+
+        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
+
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+
+        return requests.get(urljoin(endpoint, '/record/%s/entries.ttl' % item_json[register_name]))
+
+    def test_content_type(self, response):
+        assert parse_options_header(response.headers['content-type']) \
+            == ('text/turtle', {'charset':'UTF-8'})
+
+    def test_response_contents(self, response, entry_ttl_schema):
+        namespace = 'https://openregister.github.io/specification/#'
+        entry_ttl_schema.add_data(response.text)
+        problems = entry_ttl_schema.validateDataMatchesFieldDataTypes(namespace)
+
+        assert problems == [], \
+            'There is a problem with Record Entries resource ttl'

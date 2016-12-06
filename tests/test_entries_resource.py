@@ -57,3 +57,20 @@ class TestEntriesResourceTsv(object):
         problems = entry_csv_schema.validate(csv.reader(response.text.split('\n'), delimiter='\t'))
         assert problems == [], \
             'There is a problem with Entries resource tsv'
+
+class TestEntriesResourceTtl(object):
+    @pytest.fixture
+    def response(self, endpoint):
+        return requests.get(urljoin(endpoint, 'entries.ttl'))
+
+    def test_content_type(self, response):
+        assert parse_options_header(response.headers['content-type']) \
+            == ('text/turtle', {'charset':'UTF-8'})
+
+    def test_response_contents(self, response, entry_ttl_schema):
+        namespace = 'https://openregister.github.io/specification/#'
+        entry_ttl_schema.add_data(response.text)
+        problems = entry_ttl_schema.validateDataMatchesFieldDataTypes(namespace)
+
+        assert problems == [], \
+            'There is a problem with Entries resource ttl'
