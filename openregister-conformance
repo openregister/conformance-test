@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("endpoint", help="URL of register to test")
 parser.add_argument("--register", help="name of the register to run conformance tests for")
 parser.add_argument("--no-https", help="suppress tests for HTTPS functionality", action="store_true")
+parser.add_argument("--register-domain", help="domain of the register")
 
 args = parser.parse_args()
 
@@ -24,7 +25,7 @@ if args.no_https:
 
 print(args.endpoint)
 pytest_args += ['--endpoint', args.endpoint]
-
 pytest_args += ['--register', args.register]
+pytest_args += ['--register-domain', args.register_domain]
 
 raise SystemExit(pytest.main(pytest_args))

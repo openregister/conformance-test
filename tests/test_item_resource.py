@@ -90,11 +90,11 @@ class TestItemResourceTtl(object):
 
         return requests.get(urljoin(endpoint, 'item/' + item_hash + '.ttl'))
 
-    def test_response_contents(self, response, endpoint, entry_ttl_schema):
+    def test_response_contents(self, response, endpoint, entry_ttl_schema, register_domain):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
-        namespace = 'http://field.openregister.dev:8080/record/'
+        namespace = 'http://field.'+ register_domain +'/record/'
         entry_ttl_schema.add_data(response.text)
         entry_ttl_schema.add_fields(namespace, register_fields)
         problems = entry_ttl_schema.validateFieldsExist()

@@ -8,7 +8,7 @@ def pytest_addoption(parser):
                      help="register endpoints to test")
 
     parser.addoption("--register", action="append", help="Name of register")
-
+    parser.addoption("--register-domain", action="append", help="Register domain")
 
 
 def pytest_generate_tests(metafunc):
@@ -18,6 +18,9 @@ def pytest_generate_tests(metafunc):
 
     if 'register' in metafunc.fixturenames:
         metafunc.parametrize("register", metafunc.config.option.register)
+
+    if 'register_domain' in metafunc.fixturenames:
+        metafunc.parametrize("register_domain", metafunc.config.option.register_domain)    
 
 @pytest.fixture(scope="session")
 def entry_schema():
