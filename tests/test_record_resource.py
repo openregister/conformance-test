@@ -134,8 +134,8 @@ class TestRecordResourceTtl(object):
         assert parse_options_header(response.headers['content-type']) \
             == ('text/turtle', {'charset':'UTF-8'})
 
-    def test_response_contents(self, response, endpoint, entry_ttl_schema):
-        fieldNs = 'http://field.openregister.dev:8080/record/'
+    def test_response_contents(self, response, endpoint, entry_ttl_schema, register_domain):
+        fieldNs = 'http://field.'+ register_domain +'/record/'
         specificationNs = 'https://openregister.github.io/specification/#'
 
         register_data = requests.get(urljoin(endpoint, '/register.json'))
