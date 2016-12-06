@@ -22,17 +22,16 @@ class TestRecordResourceJson(object):
     def test_content_type(self, response):
         assert response.headers['content-type'] == 'application/json'
 
-    def test_response_contents(self, response, endpoint, entry_schema):
+    def test_response_contents(self, response, endpoint, record_entry_part_schema):
         record_json = response.json()
 
         entry_part = {
             'entry-number': record_json.pop('entry-number'),
             'item-hash': record_json.pop('item-hash'),
-            'entry-timestamp': record_json.pop('entry-timestamp'),
-            'key': record_json.pop('key')
+            'entry-timestamp': record_json.pop('entry-timestamp')
         }
 
-        validate(entry_part, entry_schema)
+        validate(entry_part, record_entry_part_schema)
 
         register_data = requests.get(urljoin(endpoint, '/register.json'))
 
@@ -56,17 +55,16 @@ class TestRecordResourceYaml(object):
         assert parse_options_header(response.headers['content-type']) \
             == ('text/yaml', {'charset':'UTF-8'})
 
-    def test_response_contents(self, response, endpoint, entry_schema):
+    def test_response_contents(self, response, endpoint, record_entry_part_schema):
         record_yaml = yaml.load(response.text)
 
         entry_part = {
             'entry-number': record_yaml.pop('entry-number'),
             'item-hash': record_yaml.pop('item-hash'),
-            'entry-timestamp': record_yaml.pop('entry-timestamp'),
-            'key': record_yaml.pop('key')
+            'entry-timestamp': record_yaml.pop('entry-timestamp')
         }
 
-        validate(entry_part, entry_schema)
+        validate(entry_part, record_entry_part_schema)
 
         register_data = requests.get(urljoin(endpoint, '/register.json'))
 
@@ -134,25 +132,26 @@ class TestRecordResourceTtl(object):
         assert parse_options_header(response.headers['content-type']) \
             == ('text/turtle', {'charset':'UTF-8'})
 
-    def test_response_contents(self, response, endpoint, entry_ttl_schema, register_domain):
+    def test_response_contents(self, response, endpoint, record_ttl_schema, register_domain):
         fieldNs = 'http://field.'+ register_domain +'/record/'
         specificationNs = 'https://openregister.github.io/specification/#'
 
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
-        entry_ttl_schema.add_data(response.text)
-        entry_ttl_schema.add_fields(fieldNs, register_fields)
-        entry_ttl_schema.addEntryFieldsToValidation(specificationNs)
-        problems = entry_ttl_schema.validateFieldsExist()
-        problems.extend(p for p in entry_ttl_schema.validateDataMatchesFieldDataTypes(specificationNs))
+        record_ttl_schema.add_data(response.text)
+        record_ttl_schema.add_fields(fieldNs, register_fields)
+        record_ttl_schema.addEntryFieldsToValidation(specificationNs)
+        
+        problems = record_ttl_schema.validateFieldsExist()
+        problems += record_ttl_schema.validateDataMatchesFieldDataTypes(specificationNs)
 
         assert problems == [], \
             'There is a problem with Record resource ttl'
 
 class RecordCsvSchema:
     def get_schema(self, endpoint):
-        field_names = ['entry-number', 'entry-timestamp', 'item-hash', 'key']
+        field_names = ['entry-number', 'entry-timestamp', 'item-hash']
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
         field_names += register_fields
@@ -162,5 +161,4 @@ class RecordCsvSchema:
         validator.add_value_check('entry-number', str, match_pattern('^\d+$'))
         validator.add_value_check('item-hash', str, match_pattern('^sha-256:[a-f\d]{64}$'))
         validator.add_value_check('entry-timestamp', str, match_pattern('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'))
-        validator.add_value_check('key', str, match_pattern('.+'))
         return validator
