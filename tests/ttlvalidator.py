@@ -25,16 +25,13 @@ class TtlValidator:
         self.fields.extend(self.specification_namespace[f] for f in self.entryRegexMap.keys())
 
     def validate_fields_exist(self):
-        problems = []
-        problems.extend(p for p in self.graph.predicates() if p not in self.fields)
-
-        return problems
+        return [p for p in self.graph.predicates() if p not in self.fields]
 
     def validate_data_matches_field_data_types(self):
         problems = []
 
         for p, r in self.entryRegexMap.items():
             objects = list(self.graph.objects(subject=None, predicate=self.specification_namespace[p]))
-            problems.extend(v for k, v in enumerate(objects) if r.search(v) is None)
+            problems.extend(v for _, v in enumerate(objects) if r.search(v) is None)
 
         return problems
