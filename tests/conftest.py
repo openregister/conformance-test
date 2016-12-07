@@ -1,5 +1,6 @@
 import pytest
 
+import tests.data_types as types
 from csvvalidator import *
 from .ttlvalidator import TtlValidator
 
@@ -21,34 +22,18 @@ def pytest_generate_tests(metafunc):
         metafunc.parametrize('register_domain', metafunc.config.option.register_domain)
 
 
-def _entry_schema_properties():
-    return {
-        'entry-number': {
-            'type': 'string',
-            'pattern': '^\d+$'
-        },
-        'item-hash': {
-            'type': 'string',
-            'pattern': '^sha-256:[a-f\d]{64}$'
-        },
-        'entry-timestamp': {
-            'type': 'string',
-            'pattern': '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
-        },
-        'key': {
-            'type': 'string',
-            'pattern': '.+'
-        }
-    }
-
-
 @pytest.fixture(scope='session')
 def entry_schema():
     # This schema should always represent the response json specified at
     # <http://openregister.github.io/specification/#entry-resource>
     return {
         'type': 'object',
-        'properties': _entry_schema_properties(),
+        'properties': {
+            **types.ENTRY_NUMBER,
+            **types.ITEM_HASH,
+            **types.ENTRY_TIMESTAMP,
+            **types.ENTRY_KEY
+        },
         'required': ['entry-number', 'item-hash', 'entry-timestamp', 'key'],
         'additionalProperties': False
     }
@@ -62,7 +47,12 @@ def entries_schema():
         'type': 'array',
         'items': {
             'type': 'object',
-            'properties': _entry_schema_properties(),
+            'properties': {
+                **types.ENTRY_NUMBER,
+                **types.ITEM_HASH,
+                **types.ENTRY_TIMESTAMP,
+                **types.ENTRY_KEY
+            },
             'required': ['entry-number', 'item-hash', 'entry-timestamp', 'key'],
             'additionalProperties': False
         }
@@ -71,11 +61,13 @@ def entries_schema():
 
 @pytest.fixture(scope='session')
 def record_entry_part_schema():
-    record_fields = _entry_schema_properties()
-    record_fields.pop('key')
     return {
         'type': 'object',
-        'properties': record_fields,
+        'properties': {
+            **types.ENTRY_NUMBER,
+            **types.ITEM_HASH,
+            **types.ENTRY_TIMESTAMP,
+        },
         'required': ['entry-number', 'item-hash', 'entry-timestamp'],
         'additionalProperties': False
     }
