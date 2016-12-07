@@ -73,9 +73,8 @@ class TestEntriesResourceTtl(object):
                == ('text/turtle', {'charset': 'UTF-8'})
 
     def test_response_contents(self, response, entry_ttl_schema):
-        namespace = 'https://openregister.github.io/specification/#'
         entry_ttl_schema.add_data(response.text)
-        problems = entry_ttl_schema.validate_data_matches_field_data_types(namespace)
+        problems = entry_ttl_schema.validate_data_matches_field_data_types()
 
         assert problems == [], \
             'There is a problem with Entries resource ttl'

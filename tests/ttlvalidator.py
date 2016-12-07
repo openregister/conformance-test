@@ -22,6 +22,7 @@ class TtlValidator:
 
     def add_entry_fields_to_validation(self, namespace):
         ns = Namespace(namespace)
+
         self.fields.extend(ns[f] for f in self.entryRegexMap.keys())
 
     def validate_fields_exist(self):
@@ -30,13 +31,12 @@ class TtlValidator:
 
         return problems
 
-    def validate_data_matches_field_data_types(self, namespace):
+    def validate_data_matches_field_data_types(self):
         problems = []
-
-        ns = Namespace(namespace)
+        specification_namespace = Namespace('https://openregister.github.io/specification/#')
 
         for p, r in self.entryRegexMap.items():
-            objects = list(self.graph.objects(subject=None, predicate=ns[p]))
+            objects = list(self.graph.objects(subject=None, predicate=specification_namespace[p]))
             problems.extend(v for k, v in enumerate(objects) if r.search(v) is None)
 
         return problems

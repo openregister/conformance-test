@@ -136,7 +136,7 @@ class TestRecordResourceTtl(object):
         record_ttl_schema.add_entry_fields_to_validation(specification_namespace)
 
         problems = record_ttl_schema.validate_fields_exist()
-        problems += record_ttl_schema.validate_data_matches_field_data_types(specification_namespace)
+        problems += record_ttl_schema.validate_data_matches_field_data_types()
 
         assert problems == [], \
             'There is a problem with Record resource ttl'
