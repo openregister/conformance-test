@@ -2,6 +2,7 @@ import pytest
 import requests
 import yaml
 
+import tests.data_types as types
 from jsonschema import validate
 from urllib.parse import urljoin
 
@@ -13,7 +14,7 @@ REGISTER_RESOURCE_SCHEMA = {
         },
         'last-updated': {
             'type': 'string',
-            'pattern': '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
+            'pattern': types.TIMESTAMP_PATTERN
         },
         'total-records': {'type': 'integer'},
         'total-entries': {'type': 'integer'},
@@ -21,18 +22,9 @@ REGISTER_RESOURCE_SCHEMA = {
         'register-record': {
             'type': 'object',
             'properties': {
-                'entry-number': {
-                    'type': 'string',
-                    'pattern': '^\d+$'
-                },
-                'item-hash': {
-                    'type': 'string',
-                    'pattern': '^sha-256:[a-f\d]{64}$'
-                },
-                'entry-timestamp': {
-                    'type': 'string',
-                    'pattern': '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
-                },
+                **types.ENTRY_NUMBER,
+                **types.ITEM_HASH,
+                **types.ENTRY_TIMESTAMP,
                 'register': {'type': 'string'},
                 'registry': {'type': 'string'},
                 'phase': {'type': 'string'},

@@ -3,6 +3,7 @@ import pytest
 import requests
 import yaml
 
+import tests.data_types as types
 from csvvalidator import *
 from jsonschema import validate
 from urllib.parse import urljoin
@@ -149,7 +150,7 @@ def get_schema(endpoint):
 
     validator = CSVValidator(field_names)
     validator.add_header_check()
-    validator.add_value_check('entry-number', str, match_pattern('^\d+$'))
-    validator.add_value_check('item-hash', str, match_pattern('^sha-256:[a-f\d]{64}$'))
-    validator.add_value_check('entry-timestamp', str, match_pattern('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'))
+    validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
+    validator.add_value_check('item-hash', str, match_pattern(types.HASH_PATTERN))
+    validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))
     return validator

@@ -77,27 +77,27 @@ def record_entry_part_schema():
 def entry_csv_schema():
     validator = CSVValidator(('entry-number', 'entry-timestamp', 'item-hash', 'key'))
     validator.add_header_check()
-    validator.add_value_check('entry-number', str, match_pattern('^\d+$'))
-    validator.add_value_check('item-hash', str, match_pattern('^sha-256:[a-f\d]{64}$'))
-    validator.add_value_check('entry-timestamp', str, match_pattern('^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'))
-    validator.add_value_check('key', str, match_pattern('.+'))
+    validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
+    validator.add_value_check('item-hash', str, match_pattern(types.HASH_PATTERN))
+    validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))
+    validator.add_value_check('key', str, match_pattern(types.KEY_PATTERN))
     return validator
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def entry_ttl_schema():
     validator = TtlValidator()
-    validator.add_entry_regex('entry-number-field', '^\d+$')
-    validator.add_entry_regex('entry-timestamp-field', '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$')
-    validator.add_entry_regex('item-resource', '/item/sha-256:[a-f\d]{64}$')
-    validator.add_entry_regex('key-field', '.+')
+    validator.add_entry_regex('entry-number-field', types.ENTRY_NUMBER_PATTERN)
+    validator.add_entry_regex('entry-timestamp-field', types.TIMESTAMP_PATTERN)
+    validator.add_entry_regex('item-resource', types.ITEM_RESOURCE_PATTERN)
+    validator.add_entry_regex('key-field', types.KEY_PATTERN)
     return validator
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def record_ttl_schema():
     validator = TtlValidator()
-    validator.add_entry_regex('entry-number-field', '^\d+$')
-    validator.add_entry_regex('entry-timestamp-field', '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$')
-    validator.add_entry_regex('item-resource', '/item/sha-256:[a-f\d]{64}$')
+    validator.add_entry_regex('entry-number-field', types.ENTRY_NUMBER_PATTERN)
+    validator.add_entry_regex('entry-timestamp-field', types.TIMESTAMP_PATTERN)
+    validator.add_entry_regex('item-resource', types.ITEM_RESOURCE_PATTERN)
     return validator

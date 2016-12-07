@@ -1,7 +1,8 @@
 TIMESTAMP_PATTERN = '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
 ENTRY_NUMBER_PATTERN = '^\d+$'
 KEY_PATTERN = '.+'
-ITEM_HASH_PATTERN = '^sha-256:[a-f\d]{64}$'
+HASH_PATTERN = '^sha-256:[a-f\d]{64}$'
+ITEM_RESOURCE_PATTERN = '/item/sha-256:[a-f\d]{64}$'
 
 ENTRY_NUMBER = {
     'entry-number': {
@@ -13,7 +14,7 @@ ENTRY_NUMBER = {
 ITEM_HASH = {
     'item-hash': {
         'type': 'string',
-        'pattern': ITEM_HASH_PATTERN
+        'pattern': HASH_PATTERN
     }
 }
 
@@ -27,6 +28,6 @@ ENTRY_TIMESTAMP = {
 ENTRY_KEY = {
     'key': {
         'type': 'string',
-        'pattern': '.+'
+        'pattern': KEY_PATTERN
     }
 }
