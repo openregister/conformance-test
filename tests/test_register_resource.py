@@ -6,49 +6,49 @@ from jsonschema import validate
 from urllib.parse import urljoin
 
 REGISTER_RESOURCE_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "domain": {
-            "type": "string"
+    'type': 'object',
+    'properties': {
+        'domain': {
+            'type': 'string'
         },
-        "last-updated": {
-            "type": "string",
-            "pattern": "^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$"
+        'last-updated': {
+            'type': 'string',
+            'pattern': '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
         },
-        "total-records": {"type": "integer"},
-        "total-entries": {"type": "integer"},
-        "total-items": {"type": "integer"},
-        "register-record": {
-            "type": "object",
-            "properties": {
-                "entry-number": {
-                    "type": "string",
-                    "pattern": "^\d+$"
+        'total-records': {'type': 'integer'},
+        'total-entries': {'type': 'integer'},
+        'total-items': {'type': 'integer'},
+        'register-record': {
+            'type': 'object',
+            'properties': {
+                'entry-number': {
+                    'type': 'string',
+                    'pattern': '^\d+$'
                 },
-                "item-hash": {
-                    "type": "string",
-                    "pattern": "^sha-256:[a-f\d]{64}$"
+                'item-hash': {
+                    'type': 'string',
+                    'pattern': '^sha-256:[a-f\d]{64}$'
                 },
-                "entry-timestamp": {
-                    "type": "string",
-                    "pattern": "^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$"
+                'entry-timestamp': {
+                    'type': 'string',
+                    'pattern': '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
                 },
-                "register": {"type": "string"},
-                "registry": {"type": "string"},
-                "phase": {"type": "string"},
-                "text": {"type": "string"},
-                "copyright": {"type": "string"},
-                "fields": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
+                'register': {'type': 'string'},
+                'registry': {'type': 'string'},
+                'phase': {'type': 'string'},
+                'text': {'type': 'string'},
+                'copyright': {'type': 'string'},
+                'fields': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'string'
                     }
                 }
             },
-            "additionalProperties": False
+            'additionalProperties': False
         }
     },
-    "additionalProperties": False
+    'additionalProperties': False
 }
 
 

@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
 import argparse
-from itertools import repeat
 import os
-import sys
 
 import pytest
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument("endpoint", help="URL of register to test")
@@ -21,7 +18,7 @@ base_dir = os.path.dirname(os.path.realpath(__file__))
 pytest_args = [base_dir, '-q']
 
 if args.no_https:
-    pytest_args += ['-m','not https']
+    pytest_args += ['-m', 'not https']
 
 print(args.endpoint)
 pytest_args += ['--endpoint', args.endpoint]
