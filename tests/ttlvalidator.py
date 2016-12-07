@@ -9,6 +9,7 @@ class TtlValidator:
         self.graph = Graph()
         self.fields = []
         self.entryRegexMap = {}
+        self.specification_namespace = Namespace('https://openregister.github.io/specification/#')
 
     def add_data(self, data):
         self.graph.parse(data=data, format='turtle')
@@ -20,10 +21,8 @@ class TtlValidator:
     def add_entry_regex(self, field, pattern):
         self.entryRegexMap[field] = re.compile(pattern)
 
-    def add_entry_fields_to_validation(self, namespace):
-        ns = Namespace(namespace)
-
-        self.fields.extend(ns[f] for f in self.entryRegexMap.keys())
+    def add_entry_fields_to_validation(self):
+        self.fields.extend(self.specification_namespace[f] for f in self.entryRegexMap.keys())
 
     def validate_fields_exist(self):
         problems = []
@@ -33,10 +32,9 @@ class TtlValidator:
 
     def validate_data_matches_field_data_types(self):
         problems = []
-        specification_namespace = Namespace('https://openregister.github.io/specification/#')
 
         for p, r in self.entryRegexMap.items():
-            objects = list(self.graph.objects(subject=None, predicate=specification_namespace[p]))
+            objects = list(self.graph.objects(subject=None, predicate=self.specification_namespace[p]))
             problems.extend(v for k, v in enumerate(objects) if r.search(v) is None)
 
         return problems

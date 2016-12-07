@@ -98,13 +98,11 @@ class TestItemResourceTtl(object):
     def test_response_contents(self, response, endpoint, entry_ttl_schema, register_domain):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
-
         namespace = 'http://field.%s/record/' % register_domain
-        specification_namespace = 'https://openregister.github.io/specification/#'
 
         entry_ttl_schema.add_data(response.text)
         entry_ttl_schema.add_fields(namespace, register_fields)
-        entry_ttl_schema.add_entry_fields_to_validation(specification_namespace)
+        entry_ttl_schema.add_entry_fields_to_validation()
 
         problems = entry_ttl_schema.validate_fields_exist()
         problems += entry_ttl_schema.validate_data_matches_field_data_types()
