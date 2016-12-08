@@ -8,17 +8,17 @@ from urllib.parse import urljoin
 from werkzeug.http import parse_options_header
 
 
-class TestResourceBase(object):
-    def __init__(self, resource_type):
-        self.resource_type = resource_type
+class ResourceTestBase(object):
+    resource_type = ''
 
-    @pytest.fixture
+    @pytest.fixture(autouse=True)
     def response(self, endpoint):
         entry = requests.get(urljoin(endpoint, 'entry/1.json'))
         item_hash = entry.json()['item-hash']
+
         return requests.get(urljoin(endpoint, 'item/%s.%s' % (item_hash, self.resource_type)))
 
-    def get_schema(endpoint):
+    def get_schema(self, endpoint):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
@@ -27,9 +27,8 @@ class TestResourceBase(object):
         return validator
 
 
-class TestItemResourceJson(TestResourceBase):
-    def __init__(self):
-        super().__init__('json')
+class TestItemResourceJson(ResourceTestBase):
+    resource_type = 'json'
 
     def test_response_contents(self, response, endpoint):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
@@ -42,9 +41,8 @@ class TestItemResourceJson(TestResourceBase):
         assert response.headers['content-type'] == 'application/json'
 
 
-class TestItemResourceYaml(TestResourceBase):
-    def __init__(self):
-        super().__init__('yaml')
+class TestItemResourceYaml(ResourceTestBase):
+    resource_type = 'yaml'
 
     def test_response_contents(self, response, endpoint):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
@@ -58,9 +56,8 @@ class TestItemResourceYaml(TestResourceBase):
                == ('text/yaml', {'charset': 'UTF-8'})
 
 
-class TestItemResourceCsv(TestResourceBase):
-    def __init__(self):
-        super().__init__('csv')
+class TestItemResourceCsv(ResourceTestBase):
+    resource_type = 'csv'
 
     def test_response_contents(self, response, endpoint):
         csv_schema = self.get_schema(endpoint)
@@ -74,9 +71,8 @@ class TestItemResourceCsv(TestResourceBase):
                == ('text/csv', {'charset': 'UTF-8'})
 
 
-class TestItemResourceTsv(TestResourceBase):
-    def __init__(self):
-        super().__init__('tsv')
+class TestItemResourceTsv(ResourceTestBase):
+    resource_type = 'tsv'
 
     def test_response_contents(self, response, endpoint):
         tsv_schema = self.get_schema(endpoint)
@@ -90,9 +86,8 @@ class TestItemResourceTsv(TestResourceBase):
                == ('text/tab-separated-values', {'charset': 'UTF-8'})
 
 
-class TestItemResourceTtl(TestResourceBase):
-    def __init__(self):
-        super().__init__('ttl')
+class TestItemResourceTtl(ResourceTestBase):
+    resource_type = 'ttl'
 
     def test_response_contents(self, response, endpoint, entry_ttl_schema, register_domain):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
