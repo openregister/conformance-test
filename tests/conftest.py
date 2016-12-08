@@ -60,7 +60,7 @@ def entries_schema():
 
 
 @pytest.fixture(scope='session')
-def record_entry_part_schema():
+def record_schema():
     return {
         'type': 'object',
         'properties': {

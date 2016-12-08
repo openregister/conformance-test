@@ -22,7 +22,7 @@ class TestRecordResourceJson(object):
     def test_content_type(self, response):
         assert response.headers['content-type'] == 'application/json'
 
-    def test_response_contents(self, response, endpoint, record_entry_part_schema):
+    def test_response_contents(self, response, endpoint, record_schema):
         record_json = response.json()
 
         entry_part = {
@@ -31,7 +31,7 @@ class TestRecordResourceJson(object):
             'entry-timestamp': record_json.pop('entry-timestamp')
         }
 
-        validate(entry_part, record_entry_part_schema)
+        validate(entry_part, record_schema)
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
@@ -52,7 +52,7 @@ class TestRecordResourceYaml(object):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/yaml', {'charset': 'UTF-8'})
 
-    def test_response_contents(self, response, endpoint, record_entry_part_schema):
+    def test_response_contents(self, response, endpoint, record_schema):
         record_yaml = yaml.load(response.text)
         entry_part = {
             'entry-number': record_yaml.pop('entry-number'),
@@ -60,7 +60,7 @@ class TestRecordResourceYaml(object):
             'entry-timestamp': record_yaml.pop('entry-timestamp')
         }
 
-        validate(entry_part, record_entry_part_schema)
+        validate(entry_part, record_schema)
 
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
