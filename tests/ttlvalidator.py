@@ -1,42 +1,37 @@
-import rdflib
 import re
 
 from rdflib.graph import Graph
 from rdflib.namespace import Namespace
 
+
 class TtlValidator:
-	def __init__(self):
-		self.fields = []
-		self.entryRegexMap = {}
+    def __init__(self):
+        self.graph = Graph()
+        self.fields = []
+        self.entryRegexMap = {}
+        self.specification_namespace = Namespace('https://openregister.github.io/specification/#')
 
-	def add_data(self, data):
-		self.graph = Graph()
-		self.graph.parse(data=data, format="turtle")
+    def add_data(self, data):
+        self.graph.parse(data=data, format='turtle')
 
-	def add_fields(self, namespace, fields):
-		ns = Namespace(namespace)
-		self.fields.extend(ns[f] for f in fields)
+    def add_fields(self, namespace, fields):
+        ns = Namespace(namespace)
+        self.fields.extend(ns[f] for f in fields)
 
-	def add_entry_regex(self, field, pattern):
-		self.entryRegexMap[field] = re.compile(pattern)
+    def add_entry_regex(self, field, pattern):
+        self.entryRegexMap[field] = re.compile(pattern)
 
-	def addEntryFieldsToValidation(self, namespace):
-		ns = Namespace(namespace)
-		self.fields.extend(ns[f] for f in self.entryRegexMap.keys())
+    def add_entry_fields_to_validation(self):
+        self.fields.extend(self.specification_namespace[f] for f in self.entryRegexMap.keys())
 
-	def validateFieldsExist(self):
-		problems = []
-		problems.extend(p for p in self.graph.predicates() if p not in self.fields)
-		
-		return problems
+    def validate_fields_exist(self):
+        return [p for p in self.graph.predicates() if p not in self.fields]
 
-	def validateDataMatchesFieldDataTypes(self, namespace):
-		problems = []
+    def validate_data_matches_field_data_types(self):
+        problems = []
 
-		ns = Namespace(namespace)
+        for p, r in self.entryRegexMap.items():
+            objects = list(self.graph.objects(subject=None, predicate=self.specification_namespace[p]))
+            problems.extend(v for _, v in enumerate(objects) if r.search(v) is None)
 
-		for p, r in self.entryRegexMap.items():
-			objects = list(self.graph.objects(subject=None, predicate=ns[p]))
-			problems.extend(v for k, v in enumerate(objects) if r.search(v) is None)
-
-		return problems
+        return problems
