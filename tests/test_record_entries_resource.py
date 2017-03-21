@@ -13,7 +13,7 @@ class TestRecordEntriesResourceJson(object):
     def response(self, endpoint, register):
         register_name = register
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/record/%s/entries.json' % item_json[register_name]))
 
@@ -29,7 +29,7 @@ class TestRecordEntriesResourceYaml(object):
     def response(self, endpoint, register):
         register_name = register
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/record/%s/entries.yaml' % item_json[register_name]))
 
@@ -46,7 +46,7 @@ class TestRecordEntriesResourceCsv(object):
     def response(self, endpoint, register):
         register_name = register
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/record/%s/entries.csv' % item_json[register_name]))
 
@@ -65,7 +65,7 @@ class TestRecordEntriesResourceTsv(object):
     def response(self, endpoint, register):
         register_name = register
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/record/%s/entries.tsv' % item_json[register_name]))
 
@@ -84,7 +84,7 @@ class TestRecordEntriesResourceTtl(object):
     def response(self, endpoint, register):
         register_name = register
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/record/%s/entries.ttl' % item_json[register_name]))
 

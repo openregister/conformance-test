@@ -15,7 +15,7 @@ args = parser.parse_args()
 
 base_dir = os.path.dirname(os.path.realpath(__file__))
 
-pytest_args = [base_dir, '-q']
+pytest_args = [base_dir, '-q', '-s']
 
 if args.no_https:
     pytest_args += ['-m', 'not https']
