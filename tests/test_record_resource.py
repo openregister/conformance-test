@@ -28,7 +28,7 @@ class TestRecordResourceJson(object):
         entry_part = {
             'index-entry-number': record_json.pop('index-entry-number'),
             'entry-number': record_json.pop('entry-number'),
-            'item-hash': record_json.pop('item-hash'),
+            'key': record_json.pop('key'),
             'entry-timestamp': record_json.pop('entry-timestamp')
         }
 
@@ -58,7 +58,7 @@ class TestRecordResourceYaml(object):
         entry_part = {
             'index-entry-number': record_yaml.pop('index-entry-number'),
             'entry-number': record_yaml.pop('entry-number'),
-            'item-hash': record_yaml.pop('item-hash'),
+            'key': record_yaml.pop('key'),
             'entry-timestamp': record_yaml.pop('entry-timestamp')
         }
 
@@ -145,7 +145,7 @@ class TestRecordResourceTtl(object):
 
 
 def get_schema(endpoint):
-    field_names = ['index-entry-number','entry-number', 'entry-timestamp', 'item-hash']
+    field_names = ['index-entry-number','entry-number', 'entry-timestamp', 'key']
     register_data = requests.get(urljoin(endpoint, '/register.json'))
     register_fields = register_data.json()['register-record']['fields']
     field_names += register_fields
@@ -154,6 +154,6 @@ def get_schema(endpoint):
     validator.add_header_check()
     validator.add_value_check('index-entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
     validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
-    validator.add_value_check('item-hash', str, match_pattern(types.HASH_PATTERN))
+    validator.add_value_check('key', str, match_pattern(types.KEY_PATTERN))
     validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))
     return validator

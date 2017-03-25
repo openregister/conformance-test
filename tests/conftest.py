@@ -68,17 +68,17 @@ def record_schema():
         'properties': {
             **types.INDEX_ENTRY_NUMBER,
             **types.ENTRY_NUMBER,
-            **types.ITEM_HASH_ARRAY,
+            **types.ENTRY_KEY,
             **types.ENTRY_TIMESTAMP,
         },
-        'required': ['index-entry-number','entry-number', 'item-hash', 'entry-timestamp'],
+        'required': ['index-entry-number', 'entry-number', 'key', 'entry-timestamp'],
         'additionalProperties': False
     }
 
 
 @pytest.fixture(scope='session')
 def entry_csv_schema():
-    validator = CSVValidator(('index-entry-number', 'entry-number', 'entry-timestamp', 'item-hash', 'key'))
+    validator = CSVValidator(('index-entry-number', 'entry-number', 'entry-timestamp', 'key', 'item-hash'))
     validator.add_header_check()
     validator.add_value_check('index-entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
     validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
