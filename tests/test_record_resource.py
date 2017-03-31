@@ -15,7 +15,7 @@ class TestRecordResourceJson(object):
     def response(self, endpoint, register):
         register_name = register
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/record/%s.json' % item_json[register_name]))
 
@@ -26,8 +26,9 @@ class TestRecordResourceJson(object):
         record_json = response.json()
 
         entry_part = {
+            'index-entry-number': record_json.pop('index-entry-number'),
             'entry-number': record_json.pop('entry-number'),
-            'item-hash': record_json.pop('item-hash'),
+            'key': record_json.pop('key'),
             'entry-timestamp': record_json.pop('entry-timestamp')
         }
 
@@ -35,7 +36,7 @@ class TestRecordResourceJson(object):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
-        assert set(record_json.keys()).issubset(register_fields), \
+        assert set(record_json['item'][0].keys()).issubset(register_fields), \
             'Record contains unrecognized keys'
 
 
@@ -44,7 +45,7 @@ class TestRecordResourceYaml(object):
     def response(self, endpoint, register):
         register_name = register
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/record/%s.yaml' % item_json[register_name]))
 
@@ -55,8 +56,9 @@ class TestRecordResourceYaml(object):
     def test_response_contents(self, response, endpoint, record_schema):
         record_yaml = yaml.load(response.text)
         entry_part = {
+            'index-entry-number': record_yaml.pop('index-entry-number'),
             'entry-number': record_yaml.pop('entry-number'),
-            'item-hash': record_yaml.pop('item-hash'),
+            'key': record_yaml.pop('key'),
             'entry-timestamp': record_yaml.pop('entry-timestamp')
         }
 
@@ -65,7 +67,9 @@ class TestRecordResourceYaml(object):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
-        assert set(record_yaml.keys()).issubset(register_fields), \
+        item_field_names = record_yaml['item'][0].keys()
+
+        assert set(item_field_names).issubset(register_fields), \
             'Record contains unrecognized keys'
 
 
@@ -74,7 +78,7 @@ class TestRecordResourceCsv(object):
     def response(self, endpoint, register):
         register_name = register
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/record/%s.csv' % item_json[register_name]))
 
@@ -95,7 +99,7 @@ class TestRecordResourceTsv(object):
     def response(self, endpoint, register):
         register_name = register
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/record/%s.tsv' % item_json[register_name]))
 
@@ -116,7 +120,7 @@ class TestRecordResourceTtl(object):
     def response(self, endpoint, register):
         register_name = register
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'])).json()
+        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/record/%s.ttl' % item_json[register_name]))
 
@@ -141,14 +145,15 @@ class TestRecordResourceTtl(object):
 
 
 def get_schema(endpoint):
-    field_names = ['entry-number', 'entry-timestamp', 'item-hash']
+    field_names = ['index-entry-number','entry-number', 'entry-timestamp', 'key']
     register_data = requests.get(urljoin(endpoint, '/register.json'))
     register_fields = register_data.json()['register-record']['fields']
     field_names += register_fields
 
     validator = CSVValidator(field_names)
     validator.add_header_check()
+    validator.add_value_check('index-entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
     validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
-    validator.add_value_check('item-hash', str, match_pattern(types.HASH_PATTERN))
+    validator.add_value_check('key', str, match_pattern(types.KEY_PATTERN))
     validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))
     return validator
