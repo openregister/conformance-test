@@ -22,8 +22,9 @@ REGISTER_RESOURCE_SCHEMA = {
         'register-record': {
             'type': 'object',
             'properties': {
+                **types.INDEX_ENTRY_NUMBER,
                 **types.ENTRY_NUMBER,
-                **types.ITEM_HASH,
+                **types.ENTRY_KEY,
                 **types.ENTRY_TIMESTAMP,
                 'register': {'type': 'string'},
                 'registry': {'type': 'string'},
