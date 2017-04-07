@@ -17,26 +17,28 @@ class TestRecordResourceJson(object):
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/record/%s.json' % item_json[register_name]))
+        return item_json[register_name], requests.get(urljoin(endpoint, '/record/%s.json' % item_json[register_name]))
 
     def test_content_type(self, response):
-        assert response.headers['content-type'] == 'application/json'
+        key, record_response = response
+        assert record_response.headers['content-type'] == 'application/json'
 
     def test_response_contents(self, response, endpoint, record_schema):
-        record_json = response.json()
+        key, record_response = response
 
+        record_body = record_response.json()[key]
         entry_part = {
-            'index-entry-number': record_json.pop('index-entry-number'),
-            'entry-number': record_json.pop('entry-number'),
-            'key': record_json.pop('key'),
-            'entry-timestamp': record_json.pop('entry-timestamp')
+            'index-entry-number': record_body.pop('index-entry-number'),
+            'entry-number': record_body.pop('entry-number'),
+            'key': record_body.pop('key'),
+            'entry-timestamp': record_body.pop('entry-timestamp')
         }
 
         validate(entry_part, record_schema)
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
-        assert set(record_json['item'][0].keys()).issubset(register_fields), \
+        assert set(record_body['item'][0].keys()).issubset(register_fields), \
             'Record contains unrecognized keys'
 
 
@@ -47,19 +49,22 @@ class TestRecordResourceYaml(object):
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/record/%s.yaml' % item_json[register_name]))
+        return item_json[register_name], requests.get(urljoin(endpoint, '/record/%s.yaml' % item_json[register_name]))
 
     def test_content_type(self, response):
-        assert parse_options_header(response.headers['content-type']) \
+        key, record_response = response
+        assert parse_options_header(record_response.headers['content-type']) \
                == ('text/yaml', {'charset': 'UTF-8'})
 
     def test_response_contents(self, response, endpoint, record_schema):
-        record_yaml = yaml.load(response.text)
+        key, record_response = response
+
+        record_body = yaml.load(record_response.text)[key]
         entry_part = {
-            'index-entry-number': record_yaml.pop('index-entry-number'),
-            'entry-number': record_yaml.pop('entry-number'),
-            'key': record_yaml.pop('key'),
-            'entry-timestamp': record_yaml.pop('entry-timestamp')
+            'index-entry-number': record_body.pop('index-entry-number'),
+            'entry-number': record_body.pop('entry-number'),
+            'key': record_body.pop('key'),
+            'entry-timestamp': record_body.pop('entry-timestamp')
         }
 
         validate(entry_part, record_schema)
@@ -67,7 +72,7 @@ class TestRecordResourceYaml(object):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
-        item_field_names = record_yaml['item'][0].keys()
+        item_field_names = record_body['item'][0].keys()
 
         assert set(item_field_names).issubset(register_fields), \
             'Record contains unrecognized keys'
