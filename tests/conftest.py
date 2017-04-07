@@ -27,17 +27,22 @@ def entry_schema():
     # This schema should always represent the response json specified at
     # <http://openregister.github.io/specification/#entry-resource>
     return {
-        'type': 'object',
-        'properties': {
-            **types.INDEX_ENTRY_NUMBER,
-            **types.ENTRY_NUMBER,
-            **types.ITEM_HASH_ARRAY,
-            **types.ENTRY_TIMESTAMP,
-            **types.ENTRY_KEY
-        },
-        'required': ['index-entry-number','entry-number', 'item-hash', 'entry-timestamp', 'key'],
-        'additionalProperties': False
-    }
+            'type': 'array',
+            'minItems': 1,
+            'maxItems': 1,
+            'items': {
+                'type': 'object',
+                'properties': {
+                    **types.INDEX_ENTRY_NUMBER,
+                    **types.ENTRY_NUMBER,
+                    **types.ITEM_HASH_ARRAY,
+                    **types.ENTRY_TIMESTAMP,
+                    **types.ENTRY_KEY
+                },
+                'required': ['index-entry-number','entry-number', 'item-hash', 'entry-timestamp', 'key'],
+                'additionalProperties': False
+            }
+        }
 
 
 @pytest.fixture(scope='session')
