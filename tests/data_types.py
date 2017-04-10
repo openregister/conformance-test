@@ -35,6 +35,15 @@ ITEM_HASH_ARRAY = {
     }
 }
 
+ITEM = {
+    'item': {
+        'type': 'array',
+        'items': {
+            'type': 'object'
+        }
+    }
+}
+
 ENTRY_TIMESTAMP = {
     'entry-timestamp': {
         'type': 'string',
