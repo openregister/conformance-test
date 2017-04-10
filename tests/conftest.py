@@ -70,13 +70,19 @@ def entries_schema():
 def record_schema():
     return {
         'type': 'object',
-        'properties': {
-            **types.INDEX_ENTRY_NUMBER,
-            **types.ENTRY_NUMBER,
-            **types.ENTRY_KEY,
-            **types.ENTRY_TIMESTAMP,
+        'patternProperties': {
+            ".*": {
+                'properties': {
+                    **types.INDEX_ENTRY_NUMBER,
+                    **types.ENTRY_NUMBER,
+                    **types.ENTRY_KEY,
+                    **types.ENTRY_TIMESTAMP,
+                    **types.ITEM
+                },
+                'required': ['index-entry-number', 'entry-number', 'key', 'entry-timestamp'],
+                'additionalProperties': False
+            }
         },
-        'required': ['index-entry-number', 'entry-number', 'key', 'entry-timestamp'],
         'additionalProperties': False
     }
 
