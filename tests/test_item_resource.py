@@ -13,7 +13,7 @@ class ResourceTestBase(object):
 
     @pytest.fixture(autouse=True)
     def response(self, endpoint):
-        entry = requests.get(urljoin(endpoint, 'entry/1.json'))
+        entry = requests.get(urljoin(endpoint, 'entry/13.json'))
         item_hash = entry.json()[0]['item-hash'][0]
 
         return requests.get(urljoin(endpoint, 'item/%s.%s' % (item_hash, self.resource_type)))

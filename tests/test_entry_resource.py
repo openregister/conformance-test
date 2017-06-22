@@ -11,7 +11,7 @@ from werkzeug.http import parse_options_header
 class TestEntryResourceJson(object):
     @pytest.fixture
     def response(self, endpoint):
-        return requests.get(urljoin(endpoint, 'entry/1.json'))
+        return requests.get(urljoin(endpoint, 'entry/13.json'))
 
     def test_content_type(self, response):
         assert response.headers['content-type'] == 'application/json'
@@ -23,7 +23,7 @@ class TestEntryResourceJson(object):
 class TestEntryResourceYaml(object):
     @pytest.fixture
     def response(self, endpoint):
-        return requests.get(urljoin(endpoint, 'entry/1.yaml'))
+        return requests.get(urljoin(endpoint, 'entry/13.yaml'))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
@@ -36,7 +36,7 @@ class TestEntryResourceYaml(object):
 class TestEntryResourceCsv(object):
     @pytest.fixture
     def response(self, endpoint):
-        return requests.get(urljoin(endpoint, 'entry/1.csv'))
+        return requests.get(urljoin(endpoint, 'entry/13.csv'))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
@@ -51,7 +51,7 @@ class TestEntryResourceCsv(object):
 class TestEntryResourceTsv(object):
     @pytest.fixture
     def response(self, endpoint):
-        return requests.get(urljoin(endpoint, 'entry/1.tsv'))
+        return requests.get(urljoin(endpoint, 'entry/13.tsv'))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
@@ -66,7 +66,7 @@ class TestEntryResourceTsv(object):
 class TestEntryResourceTtl(object):
     @pytest.fixture
     def response(self, endpoint):
-        return requests.get(urljoin(endpoint, 'entry/1.ttl'))
+        return requests.get(urljoin(endpoint, 'entry/13.ttl'))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \

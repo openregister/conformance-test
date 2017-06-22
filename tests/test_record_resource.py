@@ -14,7 +14,7 @@ class TestRecordResourceJson(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
+        entry_json = requests.get(urljoin(endpoint, 'entry/13.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return item_json[register_name], requests.get(urljoin(endpoint, '/record/%s.json' % item_json[register_name]))
@@ -40,7 +40,7 @@ class TestRecordResourceYaml(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
+        entry_json = requests.get(urljoin(endpoint, 'entry/13.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return item_json[register_name], requests.get(urljoin(endpoint, '/record/%s.yaml' % item_json[register_name]))
@@ -71,7 +71,7 @@ class TestRecordResourceCsv(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
+        entry_json = requests.get(urljoin(endpoint, 'entry/13.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/record/%s.csv' % item_json[register_name]))
@@ -92,7 +92,7 @@ class TestRecordResourceTsv(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
+        entry_json = requests.get(urljoin(endpoint, 'entry/13.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/record/%s.tsv' % item_json[register_name]))
@@ -113,7 +113,7 @@ class TestRecordResourceTtl(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
+        entry_json = requests.get(urljoin(endpoint, 'entry/13.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/record/%s.ttl' % item_json[register_name]))
