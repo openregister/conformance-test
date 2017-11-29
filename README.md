@@ -23,5 +23,11 @@ not worry if they fail.  To force these tests to run, run them with
 Note that passing all of the tests does not guarantee that you have a
 fully-conformant implementation.
 
+## License
+
+Unless stated otherwise, this codebase is released under [the MIT
+license](./LICENSE).
+
+
 [specification]: https://openregister.github.io/specification/
 [xfail]: https://pytest.org/latest/skipping.html
