@@ -92,7 +92,7 @@ class TestItemResourceTtl(ResourceTestBase):
     def test_response_contents(self, response, endpoint, entry_ttl_schema, register_domain):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
-        namespace = 'http://field.%s/record/' % register_domain
+        namespace = 'http://field.%s/records/' % register_domain
 
         entry_ttl_schema.add_data(response.text)
         entry_ttl_schema.add_fields(namespace, register_fields)

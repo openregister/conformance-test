@@ -17,7 +17,7 @@ class TestRecordResourceJson(object):
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
-        return item_json[register_name], requests.get(urljoin(endpoint, '/record/%s.json' % item_json[register_name]))
+        return item_json[register_name], requests.get(urljoin(endpoint, '/records/%s.json' % item_json[register_name]))
 
     def test_content_type(self, response):
         key, record_response = response
@@ -43,7 +43,7 @@ class TestRecordResourceYaml(object):
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
-        return item_json[register_name], requests.get(urljoin(endpoint, '/record/%s.yaml' % item_json[register_name]))
+        return item_json[register_name], requests.get(urljoin(endpoint, '/records/%s.yaml' % item_json[register_name]))
 
     def test_content_type(self, response):
         key, record_response = response
@@ -74,7 +74,7 @@ class TestRecordResourceCsv(object):
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/record/%s.csv' % item_json[register_name]))
+        return requests.get(urljoin(endpoint, '/records/%s.csv' % item_json[register_name]))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
@@ -95,7 +95,7 @@ class TestRecordResourceTsv(object):
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/record/%s.tsv' % item_json[register_name]))
+        return requests.get(urljoin(endpoint, '/records/%s.tsv' % item_json[register_name]))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
@@ -116,14 +116,14 @@ class TestRecordResourceTtl(object):
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/record/%s.ttl' % item_json[register_name]))
+        return requests.get(urljoin(endpoint, '/records/%s.ttl' % item_json[register_name]))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/turtle', {'charset': 'UTF-8'})
 
     def test_response_contents(self, response, endpoint, record_ttl_schema, register_domain):
-        field_namespace = 'http://field.%s/record/' % register_domain
+        field_namespace = 'http://field.%s/records/' % register_domain
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
