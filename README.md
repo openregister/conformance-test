@@ -4,7 +4,7 @@ A tool to search for [specification][] violations.  Requires Python 3.
 
 Usage:
 
-    $ virtualenv -p python3 conform
+    $ python3 -m venv conform
     $ source conform/bin/activate
     (conform) $ pip install -e . -r requirements.txt
     (conform) $ openregister-conformance https://url-of-register [https://another-register ...]
