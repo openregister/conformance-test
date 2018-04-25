@@ -4,13 +4,15 @@ A tool to search for [specification][] violations.  Requires Python 3.
 
 Usage:
 
-    $ mkvirtualenv -p python3 conform
-    $ workon conform
+    $ python3 -m venv conform
+    $ source conform/bin/activate
     (conform) $ pip install -e . -r requirements.txt
     (conform) $ openregister-conformance https://url-of-register [https://another-register ...]
 
 Example of running tests against `localhost`:
-    openregister-conformance --no-https --register school --register-domain openregister.org:8080 http://localhost:8080
+```
+openregister-conformance --no-https --register school --register-domain openregister.org:8080 http://localhost:8080
+```
 
 There may be tests for future work that has not been implemented yet.
 These are marked with [`xfail`][xfail] annotations.  The
