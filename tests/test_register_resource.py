@@ -16,6 +16,10 @@ REGISTER_RESOURCE_SCHEMA = {
             'type': 'string',
             'pattern': types.TIMESTAMP_PATTERN
         },
+        'custodian': {
+            'type': 'string',
+            'required': false
+        },
         'total-records': {'type': 'integer'},
         'total-entries': {'type': 'integer'},
         'total-items': {'type': 'integer'},
