@@ -30,6 +30,8 @@ class ResourceTestBase(object):
 class TestItemResourceJson(ResourceTestBase):
     resource_type = 'json'
 
+    @pytest.mark.version(1)
+    @pytest.mark.version(2)
     def test_response_contents(self, response, endpoint):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
@@ -37,6 +39,8 @@ class TestItemResourceJson(ResourceTestBase):
         assert set(response.json().keys()).issubset(register_fields), \
             'Item json does not match fields specified in register register'
 
+    @pytest.mark.version(1)
+    @pytest.mark.version(2)
     def test_content_type(self, response):
         assert response.headers['content-type'] == 'application/json'
 
@@ -44,6 +48,7 @@ class TestItemResourceJson(ResourceTestBase):
 class TestItemResourceYaml(ResourceTestBase):
     resource_type = 'yaml'
 
+    @pytest.mark.version(1)
     def test_response_contents(self, response, endpoint):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
@@ -51,6 +56,7 @@ class TestItemResourceYaml(ResourceTestBase):
         assert set(yaml.load(response.text).keys()).issubset(register_fields), \
             'Item json does not match fields specified in register register'
 
+    @pytest.mark.version(1)
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/yaml', {'charset': 'UTF-8'})
@@ -59,6 +65,8 @@ class TestItemResourceYaml(ResourceTestBase):
 class TestItemResourceCsv(ResourceTestBase):
     resource_type = 'csv'
 
+    @pytest.mark.version(1)
+    @pytest.mark.version(2)
     def test_response_contents(self, response, endpoint):
         csv_schema = self.get_schema(endpoint)
         problems = csv_schema.validate(csv.reader(response.text.split('\r\n')))
@@ -66,6 +74,8 @@ class TestItemResourceCsv(ResourceTestBase):
         assert problems == [], \
             'There is a problem with Item resource csv'
 
+    @pytest.mark.version(1)
+    @pytest.mark.version(2)
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/csv', {'charset': 'UTF-8'})
@@ -74,6 +84,7 @@ class TestItemResourceCsv(ResourceTestBase):
 class TestItemResourceTsv(ResourceTestBase):
     resource_type = 'tsv'
 
+    @pytest.mark.version(1)
     def test_response_contents(self, response, endpoint):
         tsv_schema = self.get_schema(endpoint)
         problems = tsv_schema.validate(csv.reader(response.text.split('\n'), delimiter='\t'))
@@ -81,6 +92,7 @@ class TestItemResourceTsv(ResourceTestBase):
         assert problems == [], \
             'There is a problem with Item resource tsv'
 
+    @pytest.mark.version(1)
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/tab-separated-values', {'charset': 'UTF-8'})
@@ -89,6 +101,7 @@ class TestItemResourceTsv(ResourceTestBase):
 class TestItemResourceTtl(ResourceTestBase):
     resource_type = 'ttl'
 
+    @pytest.mark.version(1)
     def test_response_contents(self, response, endpoint, entry_ttl_schema, register_domain):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
@@ -104,6 +117,7 @@ class TestItemResourceTtl(ResourceTestBase):
         assert problems == [], \
             'There is a problem with Item resource ttl'
 
+    @pytest.mark.version(1)
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/turtle', {'charset': 'UTF-8'})

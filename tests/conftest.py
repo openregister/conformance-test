@@ -9,11 +9,30 @@ def pytest_addoption(parser):
     parser.addoption('--endpoint', action='append', help='register endpoints to test')
     parser.addoption('--register', action='append', help='Name of register')
     parser.addoption('--register-domain', action='append', help='Register domain')
+    parser.addoption('--api-version', action='store', help='Register API version', type=int)
 
+
+def pytest_configure(config):
+    # register an additional marker
+    config.addinivalue_line("markers",
+        "version(name): mark test to apply to a specific API version")
+
+def pytest_runtest_setup(item):
+    api_versions = [mark.args[0] for mark in item.iter_markers(name='version')]
+    checked_version = item.config.getoption('--api-version')
+    if checked_version not in api_versions:
+        pytest.skip("test requires --api-version in %r" % api_versions)
 
 def pytest_generate_tests(metafunc):
     if 'endpoint' in metafunc.fixturenames:
-        metafunc.parametrize('endpoint', metafunc.config.option.endpoint)
+        endpoints = metafunc.config.option.endpoint
+        version = metafunc.config.option.api_version
+        if version == 2:
+            endpoint = endpoints[0] + '/next/'
+        else:
+            endpoint = endpoints[0]
+
+        metafunc.parametrize('endpoint', [endpoint])
 
     if 'register' in metafunc.fixturenames:
         metafunc.parametrize('register', metafunc.config.option.register)

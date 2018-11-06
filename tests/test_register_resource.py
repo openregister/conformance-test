@@ -54,10 +54,12 @@ class TestRegisterResourceJson(object):
     def response(self, endpoint):
         return requests.get(urljoin(endpoint, 'register.json'))
 
+    @pytest.mark.version(1)
     def test_content_type(self, response):
         assert response.headers['content-type'] == 'application/json'
 
-    @pytest.mark.xfail
+    @pytest.mark.xfail(reason='Missing total-items')
+    @pytest.mark.version(1)
     def test_response_contents(self, response):
         validate(response.json(), REGISTER_RESOURCE_SCHEMA)
 
@@ -67,9 +69,11 @@ class TestRegisterResourceYaml(object):
     def response(self, endpoint):
         return requests.get(urljoin(endpoint, 'register.yaml'))
 
+    @pytest.mark.version(1)
     def test_content_type(self, response):
         assert response.headers['content-type'] == 'text/yaml;charset=UTF-8'
 
-    @pytest.mark.xfail
+    @pytest.mark.xfail(reason='missing total-items')
+    @pytest.mark.version(1)
     def test_response_contents(self, response):
         validate(yaml.load(response.text), REGISTER_RESOURCE_SCHEMA)
