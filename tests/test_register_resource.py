@@ -8,6 +8,7 @@ from urllib.parse import urljoin
 
 REGISTER_RESOURCE_SCHEMA = {
     'type': 'object',
+    'required': ['domain', 'last-updated', 'total-records', 'total-entries', 'total-items', 'register-record'],
     'properties': {
         'domain': {
             'type': 'string'
@@ -18,7 +19,6 @@ REGISTER_RESOURCE_SCHEMA = {
         },
         'custodian': {
             'type': 'string',
-            'required': false
         },
         'total-records': {'type': 'integer'},
         'total-entries': {'type': 'integer'},
