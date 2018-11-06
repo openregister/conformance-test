@@ -11,7 +11,7 @@ Usage:
 
 Example of running tests against `localhost`:
 ```
-openregister-conformance --no-https --register school --register-domain openregister.org:8080 http://localhost:8080
+openregister-conformance --no-https --register school --register-domain openregister.local:8080 http://localhost:8080
 ```
 
 There may be tests for future work that has not been implemented yet.
