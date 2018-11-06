@@ -12,8 +12,9 @@ class TestRecordEntriesResourceJson(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
+        item_json = requests.get(urljoin(endpoint, 'items/%s.json' % entry_json['item-hash'][0])).json()
+
 
         return requests.get(urljoin(endpoint, '/records/%s/entries.json' % item_json[register_name]))
 

@@ -11,7 +11,7 @@ from werkzeug.http import parse_options_header
 class TestEntryResourceJson(object):
     @pytest.fixture
     def response(self, endpoint):
-        return requests.get(urljoin(endpoint, 'entry/1.json'))
+        return requests.get(urljoin(endpoint, 'entries/1.json'))
 
     @pytest.mark.version(1)
     @pytest.mark.version(2)
@@ -27,7 +27,7 @@ class TestEntryResourceJson(object):
 class TestEntryResourceYaml(object):
     @pytest.fixture
     def response(self, endpoint):
-        return requests.get(urljoin(endpoint, 'entry/1.yaml'))
+        return requests.get(urljoin(endpoint, 'entries/1.yaml'))
 
     @pytest.mark.version(1)
     def test_content_type(self, response):
@@ -42,7 +42,7 @@ class TestEntryResourceYaml(object):
 class TestEntryResourceCsv(object):
     @pytest.fixture
     def response(self, endpoint):
-        return requests.get(urljoin(endpoint, 'entry/1.csv'))
+        return requests.get(urljoin(endpoint, 'entries/1.csv'))
 
     @pytest.mark.version(1)
     @pytest.mark.version(2)
@@ -61,7 +61,7 @@ class TestEntryResourceCsv(object):
 class TestEntryResourceTsv(object):
     @pytest.fixture
     def response(self, endpoint):
-        return requests.get(urljoin(endpoint, 'entry/1.tsv'))
+        return requests.get(urljoin(endpoint, 'entries/1.tsv'))
 
     @pytest.mark.version(1)
     def test_content_type(self, response):
@@ -78,7 +78,7 @@ class TestEntryResourceTsv(object):
 class TestEntryResourceTtl(object):
     @pytest.fixture
     def response(self, endpoint):
-        return requests.get(urljoin(endpoint, 'entry/1.ttl'))
+        return requests.get(urljoin(endpoint, 'entries/1.ttl'))
 
     @pytest.mark.version(1)
     def test_content_type(self, response):

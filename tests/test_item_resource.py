@@ -8,15 +8,15 @@ from urllib.parse import urljoin
 from werkzeug.http import parse_options_header
 
 
-class ResourceTestBase(object):
+class ResourceTestBase:
     resource_type = ''
 
     @pytest.fixture(autouse=True)
     def response(self, endpoint):
-        entry = requests.get(urljoin(endpoint, 'entry/1.json'))
+        entry = requests.get(urljoin(endpoint, 'entries/1.json'))
         item_hash = entry.json()[0]['item-hash'][0]
 
-        return requests.get(urljoin(endpoint, 'item/%s.%s' % (item_hash, self.resource_type)))
+        return requests.get(urljoin(endpoint, 'items/%s.%s' % (item_hash, self.resource_type)))
 
     def get_schema(self, endpoint):
         register_data = requests.get(urljoin(endpoint, '/register.json'))
