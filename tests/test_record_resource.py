@@ -10,7 +10,8 @@ from urllib.parse import urljoin
 from werkzeug.http import parse_options_header
 
 
-class TestRecordResourceJson(object):
+@pytest.mark.version(1)
+class TestRecordResourceJsonV1(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
@@ -19,14 +20,10 @@ class TestRecordResourceJson(object):
 
         return item_json[register_name], requests.get(urljoin(endpoint, '/records/%s.json' % item_json[register_name]))
 
-    @pytest.mark.version(1)
-    @pytest.mark.version(2)
     def test_content_type(self, response):
         key, record_response = response
         assert record_response.headers['content-type'] == 'application/json'
 
-    @pytest.mark.version(1)
-    @pytest.mark.version(2)
     def test_response_contents(self, response, endpoint, record_schema):
         key, record_response = response
 
@@ -40,6 +37,34 @@ class TestRecordResourceJson(object):
             'Record contains unrecognized keys'
 
 
+@pytest.mark.version(2)
+class TestRecordResourceJsonV2(object):
+    @pytest.fixture
+    def response(self, endpoint, register):
+        register_name = register
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
+        blob_json = requests.get(urljoin(endpoint, 'blobs/%s.json' % entry_json['blob-hash'][0])).json()
+
+        return blob_json[register_name], requests.get(urljoin(endpoint, '/records/%s.json' % blob_json[register_name]))
+
+    def test_content_type(self, response):
+        key, record_response = response
+        assert record_response.headers['content-type'] == 'application/json'
+
+    def test_response_contents(self, response, endpoint, record_schema):
+        key, record_response = response
+
+        record_json = record_response.json()
+        validate(record_json, record_schema)
+
+        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_fields = register_data.json()['register-record']['fields']
+
+        assert set(record_json[key]['item'][0].keys()).issubset(register_fields), \
+            'Record contains unrecognized keys'
+
+
+@pytest.mark.version(1)
 class TestRecordResourceYaml(object):
     @pytest.fixture
     def response(self, endpoint, register):
@@ -49,13 +74,12 @@ class TestRecordResourceYaml(object):
 
         return item_json[register_name], requests.get(urljoin(endpoint, '/records/%s.yaml' % item_json[register_name]))
 
-    @pytest.mark.version(1)
+
     def test_content_type(self, response):
         key, record_response = response
         assert parse_options_header(record_response.headers['content-type']) \
                == ('text/yaml', {'charset': 'UTF-8'})
 
-    @pytest.mark.version(1)
     @pytest.mark.xfail(reason="""yaml.load decodes some register keys as integers because we do not wrap our codes in apostrophes.
         This will fail for some registers and not others and might be a problem with our YAML representation.""")
     def test_response_contents(self, response, endpoint, record_schema):
@@ -73,7 +97,8 @@ class TestRecordResourceYaml(object):
             'Record contains unrecognized keys'
 
 
-class TestRecordResourceCsv(object):
+@pytest.mark.version(1)
+class TestRecordResourceCsvV1(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
@@ -82,14 +107,10 @@ class TestRecordResourceCsv(object):
 
         return requests.get(urljoin(endpoint, '/records/%s.csv' % item_json[register_name]))
 
-    @pytest.mark.version(1)
-    @pytest.mark.version(2)
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/csv', {'charset': 'UTF-8'})
 
-    @pytest.mark.version(1)
-    @pytest.mark.version(2)
     def test_response_contents(self, response, endpoint):
         csv_schema = get_schema(endpoint)
         problems = csv_schema.validate(csv.reader(response.text.split('\r\n')))
@@ -98,6 +119,29 @@ class TestRecordResourceCsv(object):
             'There is a problem with Record resource csv'
 
 
+@pytest.mark.version(2)
+class TestRecordResourceCsvV2(object):
+    @pytest.fixture
+    def response(self, endpoint, register):
+        register_name = register
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
+        item_json = requests.get(urljoin(endpoint, 'blobs/%s.json' % entry_json['blob-hash'][0])).json()
+
+        return requests.get(urljoin(endpoint, '/records/%s.csv' % item_json[register_name]))
+
+    def test_content_type(self, response):
+        assert parse_options_header(response.headers['content-type']) \
+               == ('text/csv', {'charset': 'UTF-8'})
+
+    def test_response_contents(self, response, endpoint):
+        csv_schema = get_schema(endpoint)
+        problems = csv_schema.validate(csv.reader(response.text.split('\r\n')))
+
+        assert problems == [], \
+            'There is a problem with Record resource csv'
+
+
+@pytest.mark.version(1)
 class TestRecordResourceTsv(object):
     @pytest.fixture
     def response(self, endpoint, register):
@@ -107,12 +151,10 @@ class TestRecordResourceTsv(object):
 
         return requests.get(urljoin(endpoint, '/records/%s.tsv' % item_json[register_name]))
 
-    @pytest.mark.version(1)
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/tab-separated-values', {'charset': 'UTF-8'})
 
-    @pytest.mark.version(1)
     def test_response_contents(self, response, endpoint):
         tsv_schema = get_schema(endpoint)
         problems = tsv_schema.validate(csv.reader(response.text.split('\n'), delimiter='\t'))
@@ -121,6 +163,7 @@ class TestRecordResourceTsv(object):
             'There is a problem with Record resource tsv'
 
 
+@pytest.mark.version(1)
 class TestRecordResourceTtl(object):
     @pytest.fixture
     def response(self, endpoint, register):
@@ -130,12 +173,10 @@ class TestRecordResourceTtl(object):
 
         return requests.get(urljoin(endpoint, '/records/%s.ttl' % item_json[register_name]))
 
-    @pytest.mark.version(1)
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/turtle', {'charset': 'UTF-8'})
 
-    @pytest.mark.version(1)
     def test_response_contents(self, response, endpoint, record_ttl_schema, register_domain):
         field_namespace = 'http://field.%s/records/' % register_domain
         register_data = requests.get(urljoin(endpoint, '/register.json'))

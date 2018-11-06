@@ -35,6 +35,16 @@ ITEM_HASH_ARRAY = {
     }
 }
 
+BLOB_HASH_ARRAY = {
+    'blob-hash': {
+        'type': 'array',
+        'items': {
+            'type': 'string',
+            'pattern': HASH_PATTERN
+        }
+    }
+}
+
 ITEM = {
     'item': {
         'type': 'array',

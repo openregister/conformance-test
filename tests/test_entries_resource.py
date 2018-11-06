@@ -19,24 +19,26 @@ class TestEntriesResourceJson(object):
         assert response.headers['content-type'] == 'application/json'
 
     @pytest.mark.version(1)
+    def test_response_contents(self, response, entries_schema_v1):
+        validate(response.json(), entries_schema_v1)
+
     @pytest.mark.version(2)
-    def test_response_contents(self, response, entries_schema):
-        validate(response.json(), entries_schema)
+    def test_response_contents(self, response, entries_schema_v2):
+        validate(response.json(), entries_schema_v2)
 
 
+@pytest.mark.version(1)
 class TestEntriesResourceYaml(object):
     @pytest.fixture
     def response(self, endpoint):
         return requests.get(urljoin(endpoint, 'entries.yaml'))
 
-    @pytest.mark.version(1)
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/yaml', {'charset': 'UTF-8'})
 
-    @pytest.mark.version(1)
-    def test_response_contents(self, response, entries_schema):
-        validate(yaml.load(response.text), entries_schema)
+    def test_response_contents(self, response, entries_schema_v1):
+        validate(yaml.load(response.text), entries_schema_v1)
 
 
 class TestEntriesResourceCsv(object):
@@ -51,41 +53,44 @@ class TestEntriesResourceCsv(object):
                == ('text/csv', {'charset': 'UTF-8'})
 
     @pytest.mark.version(1)
+    def test_response_contents(self, response, entry_csv_schema_v1):
+        problems = entry_csv_schema_v1.validate(csv.reader(response.text.split('\r\n')))
+        assert problems == [], \
+            'There is a problem with Entries resource csv'
+
     @pytest.mark.version(2)
-    def test_response_contents(self, response, entry_csv_schema):
-        problems = entry_csv_schema.validate(csv.reader(response.text.split('\r\n')))
+    def test_response_contents(self, response, entry_csv_schema_v2):
+        problems = entry_csv_schema_v2.validate(csv.reader(response.text.split('\r\n')))
         assert problems == [], \
             'There is a problem with Entries resource csv'
 
 
+@pytest.mark.version(1)
 class TestEntriesResourceTsv(object):
     @pytest.fixture
     def response(self, endpoint):
         return requests.get(urljoin(endpoint, 'entries.tsv'))
 
-    @pytest.mark.version(1)
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/tab-separated-values', {'charset': 'UTF-8'})
 
-    @pytest.mark.version(1)
-    def test_response_contents(self, response, entry_csv_schema):
-        problems = entry_csv_schema.validate(csv.reader(response.text.split('\n'), delimiter='\t'))
+    def test_response_contents(self, response, entry_csv_schema_v1):
+        problems = entry_csv_schema_v1.validate(csv.reader(response.text.split('\n'), delimiter='\t'))
         assert problems == [], \
             'There is a problem with Entries resource tsv'
 
 
+@pytest.mark.version(1)
 class TestEntriesResourceTtl(object):
     @pytest.fixture
     def response(self, endpoint):
         return requests.get(urljoin(endpoint, 'entries.ttl'))
 
-    @pytest.mark.version(1)
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/turtle', {'charset': 'UTF-8'})
 
-    @pytest.mark.version(1)
     def test_response_contents(self, response, entry_ttl_schema):
         entry_ttl_schema.add_data(response.text)
         problems = entry_ttl_schema.validate_data_matches_field_data_types()
