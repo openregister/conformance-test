@@ -21,12 +21,9 @@ pytest_args = [base_dir, '-q', '-s']
 if args.no_https:
     pytest_args += ['-m', 'not https']
 
-endpoint = args.endpoint
-
 if args.api_version and args.api_version not in ('1', '2'):
         raise ValueError('Supported API versions are "1" and "2"')
 
-print(args.endpoint)
 pytest_args += ['--endpoint', args.endpoint]
 pytest_args += ['--api-version', args.api_version]
 pytest_args += ['--register', args.register]
