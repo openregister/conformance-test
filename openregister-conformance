@@ -32,4 +32,6 @@ pytest_args += ['--api-version', args.api_version]
 pytest_args += ['--register', args.register]
 pytest_args += ['--register-domain', args.register_domain]
 
+pytest_args += ['-W', 'ignore::DeprecationWarning:jsonschema.compat', '-W', 'ignore::DeprecationWarning:yaml.constructor']
+
 raise SystemExit(pytest.main(pytest_args))
