@@ -11,13 +11,13 @@ Usage:
 
 Example of running tests against `localhost`:
 ```
-openregister-conformance --no-https --register school --register-domain openregister.local:8080  --api-version 1 http://localhost:8080
+openregister-conformance --no-https --register school --register-domain openregister.local:8080  --api-version 1 http://localhost:8080/v1/
 ```
 
 The `api-version` option should be set to the version of the [specification][] you want to test against. Currently only one version is available, but we are working on a new version, which will include any backwards-incompatable API changes from [accepted RFCs](https://github.com/openregister/registers-rfcs). To test against this version, run:
 
 ```
-openregister-conformance --no-https --register school --register-domain openregister.org:8080  --api-version 2 http://localhost:8080
+openregister-conformance --no-https --register school --register-domain openregister.org:8080  --api-version 2 http://localhost:8080/next/
 ```
 
 There may be tests for future work that has not been implemented yet.

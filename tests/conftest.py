@@ -26,13 +26,7 @@ def pytest_runtest_setup(item):
 def pytest_generate_tests(metafunc):
     if 'endpoint' in metafunc.fixturenames:
         endpoints = metafunc.config.option.endpoint
-        version = metafunc.config.option.api_version
-        if version == 2:
-            endpoint = endpoints[0] + '/next/'
-        else:
-            endpoint = endpoints[0]
-
-        metafunc.parametrize('endpoint', [endpoint])
+        metafunc.parametrize('endpoint', endpoints)
 
     if 'register' in metafunc.fixturenames:
         metafunc.parametrize('register', metafunc.config.option.register)
