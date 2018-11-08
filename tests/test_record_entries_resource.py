@@ -88,13 +88,12 @@ class TestRecordEntriesResourceCsvV2(object):
         entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
         blob_json = requests.get(urljoin(endpoint, 'blobs/%s.json' % entry_json['blob-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/records/%s/entries.csv' % blob_json[register_name]))
+        return requests.get(urljoin(endpoint, 'records/%s/entries.csv' % blob_json[register_name]))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/csv', {'charset': 'UTF-8'})
 
-    @pytest.mark.xfail(reason='Currently broken: Fix it!')
     def test_response_contents(self, response, entry_csv_schema_v2):
         problems = entry_csv_schema_v2.validate(csv.reader(response.text.split('\r\n')))
         assert problems == [], \
@@ -109,7 +108,7 @@ class TestRecordEntriesResourceTsv(object):
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/records/%s/entries.tsv' % item_json[register_name]))
+        return requests.get(urljoin(endpoint, 'records/%s/entries.tsv' % item_json[register_name]))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
