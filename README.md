@@ -14,7 +14,7 @@ Example of running tests against `localhost`:
 openregister-conformance --no-https --register school --register-domain openregister.local:8080  --api-version 1 http://localhost:8080/v1/
 ```
 
-The `api-version` option should be set to the version of the [specification][] you want to test against. Currently only one version is available, but we are working on a new version, which will include any backwards-incompatable API changes from [accepted RFCs](https://github.com/openregister/registers-rfcs). To test against this version, run:
+The `api-version` option should be set to the version of the [specification][] you want to test against. For example, to test against version 2, run:
 
 ```
 openregister-conformance --no-https --register school --register-domain openregister.org:8080  --api-version 2 http://localhost:8080/next/
@@ -37,5 +37,5 @@ Unless stated otherwise, this codebase is released under [the MIT
 license](./LICENSE).
 
 
-[specification]: https://openregister.github.io/specification/
+[specification]: https://spec.openregister.org
 [xfail]: https://pytest.org/latest/skipping.html
