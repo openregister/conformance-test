@@ -7,7 +7,7 @@ Usage:
     $ python3 -m venv conform
     $ source conform/bin/activate
     (conform) $ pip install -e . -r requirements.txt
-    (conform) $ openregister-conformance --api-version version-number https://url-of-register [https://another-register ...]
+    (conform) $ openregister-conformance --api-version version-number --register register-name https://{register-name}.register.gov.uk
 
 Example of running tests against `localhost`:
 ```
