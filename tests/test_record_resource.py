@@ -24,11 +24,11 @@ class TestRecordResourceJsonV1(object):
         key, record_response = response
         assert record_response.headers['content-type'] == 'application/json'
 
-    def test_response_contents(self, response, endpoint, record_schema):
+    def test_response_contents(self, response, endpoint, record_schema_v1):
         key, record_response = response
 
         record_json = record_response.json()
-        validate(record_json, record_schema)
+        validate(record_json, record_schema_v1)
 
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
@@ -51,11 +51,11 @@ class TestRecordResourceJsonV2(object):
         key, record_response = response
         assert record_response.headers['content-type'] == 'application/json'
 
-    def test_response_contents(self, response, endpoint, record_schema):
+    def test_response_contents(self, response, endpoint, record_schema_v2):
         key, record_response = response
 
         record_json = record_response.json()
-        validate(record_json, record_schema)
+        validate(record_json, record_schema_v2)
 
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
@@ -82,11 +82,11 @@ class TestRecordResourceYaml(object):
 
     @pytest.mark.xfail(reason="""yaml.load decodes some register keys as integers because we do not wrap our codes in apostrophes.
         This will fail for some registers and not others and might be a problem with our YAML representation.""")
-    def test_response_contents(self, response, endpoint, record_schema):
+    def test_response_contents(self, response, endpoint, record_schema_v1):
         key, record_response = response
 
         record_json = yaml.load(record_response.text)
-        validate(record_json, record_schema)
+        validate(record_json, record_schema_v1)
 
         register_data = requests.get(urljoin(endpoint, '/register.json'))
         register_fields = register_data.json()['register-record']['fields']
@@ -112,7 +112,7 @@ class TestRecordResourceCsvV1(object):
                == ('text/csv', {'charset': 'UTF-8'})
 
     def test_response_contents(self, response, endpoint):
-        csv_schema = get_schema(endpoint)
+        csv_schema = get_schema_v1(endpoint)
         problems = csv_schema.validate(csv.reader(response.text.split('\r\n')))
 
         assert problems == [], \
@@ -134,7 +134,7 @@ class TestRecordResourceCsvV2(object):
                == ('text/csv', {'charset': 'UTF-8'})
 
     def test_response_contents(self, response, endpoint):
-        csv_schema = get_schema(endpoint)
+        csv_schema = get_schema_v2(endpoint)
         problems = csv_schema.validate(csv.reader(response.text.split('\r\n')))
 
         assert problems == [], \
@@ -156,7 +156,7 @@ class TestRecordResourceTsv(object):
                == ('text/tab-separated-values', {'charset': 'UTF-8'})
 
     def test_response_contents(self, response, endpoint):
-        tsv_schema = get_schema(endpoint)
+        tsv_schema = get_schema_v1(endpoint)
         problems = tsv_schema.validate(csv.reader(response.text.split('\n'), delimiter='\t'))
 
         assert problems == [], \
@@ -193,7 +193,7 @@ class TestRecordResourceTtl(object):
             'There is a problem with Record resource ttl'
 
 
-def get_schema(endpoint):
+def get_schema_v1(endpoint):
     field_names = ['index-entry-number','entry-number', 'entry-timestamp', 'key']
     register_data = requests.get(urljoin(endpoint, '/register.json'))
     register_fields = register_data.json()['register-record']['fields']
@@ -202,6 +202,20 @@ def get_schema(endpoint):
     validator = CSVValidator(field_names)
     validator.add_header_check()
     validator.add_value_check('index-entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
+    validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
+    validator.add_value_check('key', str, match_pattern(types.KEY_PATTERN))
+    validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))
+    return validator
+
+
+def get_schema_v2(endpoint):
+    field_names = ['entry-number', 'entry-timestamp', 'key']
+    register_data = requests.get(urljoin(endpoint, '/register.json'))
+    register_fields = register_data.json()['register-record']['fields']
+    field_names += register_fields
+
+    validator = CSVValidator(field_names)
+    validator.add_header_check()
     validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
     validator.add_value_check('key', str, match_pattern(types.KEY_PATTERN))
     validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))

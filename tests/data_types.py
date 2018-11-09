@@ -35,13 +35,10 @@ ITEM_HASH_ARRAY = {
     }
 }
 
-BLOB_HASH_ARRAY = {
+BLOB_HASH = {
     'blob-hash': {
-        'type': 'array',
-        'items': {
-            'type': 'string',
-            'pattern': HASH_PATTERN
-        }
+        'type': 'string',
+        'pattern': HASH_PATTERN
     }
 }
 
@@ -51,6 +48,12 @@ ITEM = {
         'items': {
             'type': 'object'
         }
+    }
+}
+
+BLOB = {
+    'blob': {
+        'type': 'object'
     }
 }
 
