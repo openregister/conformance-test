@@ -10,6 +10,7 @@ parser.add_argument("endpoint", help="URL of register to test")
 parser.add_argument("--register", help="name of the register to run conformance tests for")
 parser.add_argument("--no-https", help="suppress tests for HTTPS functionality", action="store_true")
 parser.add_argument("--register-domain", help="domain of the register")
+parser.add_argument("--api-version", help="API version to test against", required=True)
 
 args = parser.parse_args()
 
@@ -20,9 +21,14 @@ pytest_args = [base_dir, '-q', '-s']
 if args.no_https:
     pytest_args += ['-m', 'not https']
 
-print(args.endpoint)
+if args.api_version and args.api_version not in ('1', '2'):
+        raise ValueError('Supported API versions are "1" and "2"')
+
 pytest_args += ['--endpoint', args.endpoint]
+pytest_args += ['--api-version', args.api_version]
 pytest_args += ['--register', args.register]
 pytest_args += ['--register-domain', args.register_domain]
+
+pytest_args += ['-W', 'ignore::DeprecationWarning:jsonschema.compat', '-W', 'ignore::DeprecationWarning:yaml.constructor']
 
 raise SystemExit(pytest.main(pytest_args))

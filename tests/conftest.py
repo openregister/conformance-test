@@ -9,11 +9,24 @@ def pytest_addoption(parser):
     parser.addoption('--endpoint', action='append', help='register endpoints to test')
     parser.addoption('--register', action='append', help='Name of register')
     parser.addoption('--register-domain', action='append', help='Register domain')
+    parser.addoption('--api-version', action='store', help='Register API version', type=int)
 
+
+def pytest_configure(config):
+    # register an additional marker
+    config.addinivalue_line("markers",
+        "version(name): mark test to apply to a specific API version")
+
+def pytest_runtest_setup(item):
+    api_versions = [mark.args[0] for mark in item.iter_markers(name='version')]
+    checked_version = item.config.getoption('--api-version')
+    if checked_version not in api_versions:
+        pytest.skip("test requires --api-version in %r" % api_versions)
 
 def pytest_generate_tests(metafunc):
     if 'endpoint' in metafunc.fixturenames:
-        metafunc.parametrize('endpoint', metafunc.config.option.endpoint)
+        endpoints = metafunc.config.option.endpoint
+        metafunc.parametrize('endpoint', endpoints)
 
     if 'register' in metafunc.fixturenames:
         metafunc.parametrize('register', metafunc.config.option.register)
@@ -23,9 +36,7 @@ def pytest_generate_tests(metafunc):
 
 
 @pytest.fixture(scope='session')
-def entry_schema():
-    # This schema should always represent the response json specified at
-    # <http://openregister.github.io/specification/#entry-resource>
+def entry_schema_v1():
     return {
             'type': 'array',
             'minItems': 1,
@@ -44,11 +55,29 @@ def entry_schema():
             }
         }
 
+@pytest.fixture(scope='session')
+def entry_schema_v2():
+    return {
+            'type': 'array',
+            'minItems': 1,
+            'maxItems': 1,
+            'items': {
+                'type': 'object',
+                'properties': {
+                    **types.INDEX_ENTRY_NUMBER,
+                    **types.ENTRY_NUMBER,
+                    **types.BLOB_HASH_ARRAY,
+                    **types.ENTRY_TIMESTAMP,
+                    **types.ENTRY_KEY
+                },
+                'required': ['index-entry-number','entry-number', 'blob-hash', 'entry-timestamp', 'key'],
+                'additionalProperties': False
+            }
+        }
+
 
 @pytest.fixture(scope='session')
-def entries_schema():
-    # This schema should always represent the response json specified at
-    # <http://openregister.github.io/specification/#entries-resource>
+def entries_schema_v1():
     return {
         'type': 'array',
         'items': {
@@ -61,6 +90,25 @@ def entries_schema():
                 **types.ENTRY_KEY
             },
             'required': ['index-entry-number','entry-number', 'item-hash', 'entry-timestamp', 'key'],
+            'additionalProperties': False
+        }
+    }
+
+
+@pytest.fixture(scope='session')
+def entries_schema_v2():
+    return {
+        'type': 'array',
+        'items': {
+            'type': 'object',
+            'properties': {
+                **types.INDEX_ENTRY_NUMBER,
+                **types.ENTRY_NUMBER,
+                **types.BLOB_HASH_ARRAY,
+                **types.ENTRY_TIMESTAMP,
+                **types.ENTRY_KEY
+            },
+            'required': ['index-entry-number','entry-number', 'blob-hash', 'entry-timestamp', 'key'],
             'additionalProperties': False
         }
     }
@@ -88,12 +136,24 @@ def record_schema():
 
 
 @pytest.fixture(scope='session')
-def entry_csv_schema():
+def entry_csv_schema_v1():
     validator = CSVValidator(('index-entry-number', 'entry-number', 'entry-timestamp', 'key', 'item-hash'))
     validator.add_header_check()
     validator.add_value_check('index-entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
     validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
     validator.add_value_check('item-hash', str, match_pattern(types.HASH_PATTERN))
+    validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))
+    validator.add_value_check('key', str, match_pattern(types.KEY_PATTERN))
+    return validator
+
+
+@pytest.fixture(scope='session')
+def entry_csv_schema_v2():
+    validator = CSVValidator(('index-entry-number', 'entry-number', 'entry-timestamp', 'key', 'blob-hash'))
+    validator.add_header_check()
+    validator.add_value_check('index-entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
+    validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
+    validator.add_value_check('blob-hash', str, match_pattern(types.HASH_PATTERN))
     validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))
     validator.add_value_check('key', str, match_pattern(types.KEY_PATTERN))
     return validator

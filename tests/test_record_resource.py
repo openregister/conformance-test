@@ -10,12 +10,13 @@ from urllib.parse import urljoin
 from werkzeug.http import parse_options_header
 
 
-class TestRecordResourceJson(object):
+@pytest.mark.version(1)
+class TestRecordResourceJsonV1(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
+        item_json = requests.get(urljoin(endpoint, 'items/%s.json' % entry_json['item-hash'][0])).json()
 
         return item_json[register_name], requests.get(urljoin(endpoint, '/records/%s.json' % item_json[register_name]))
 
@@ -36,14 +37,43 @@ class TestRecordResourceJson(object):
             'Record contains unrecognized keys'
 
 
+@pytest.mark.version(2)
+class TestRecordResourceJsonV2(object):
+    @pytest.fixture
+    def response(self, endpoint, register):
+        register_name = register
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
+        blob_json = requests.get(urljoin(endpoint, 'blobs/%s.json' % entry_json['blob-hash'][0])).json()
+
+        return blob_json[register_name], requests.get(urljoin(endpoint, '/records/%s.json' % blob_json[register_name]))
+
+    def test_content_type(self, response):
+        key, record_response = response
+        assert record_response.headers['content-type'] == 'application/json'
+
+    def test_response_contents(self, response, endpoint, record_schema):
+        key, record_response = response
+
+        record_json = record_response.json()
+        validate(record_json, record_schema)
+
+        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_fields = register_data.json()['register-record']['fields']
+
+        assert set(record_json[key]['item'][0].keys()).issubset(register_fields), \
+            'Record contains unrecognized keys'
+
+
+@pytest.mark.version(1)
 class TestRecordResourceYaml(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
+        item_json = requests.get(urljoin(endpoint, 'items/%s.json' % entry_json['item-hash'][0])).json()
 
         return item_json[register_name], requests.get(urljoin(endpoint, '/records/%s.yaml' % item_json[register_name]))
+
 
     def test_content_type(self, response):
         key, record_response = response
@@ -67,12 +97,13 @@ class TestRecordResourceYaml(object):
             'Record contains unrecognized keys'
 
 
-class TestRecordResourceCsv(object):
+@pytest.mark.version(1)
+class TestRecordResourceCsvV1(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
+        item_json = requests.get(urljoin(endpoint, 'items/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/records/%s.csv' % item_json[register_name]))
 
@@ -88,12 +119,35 @@ class TestRecordResourceCsv(object):
             'There is a problem with Record resource csv'
 
 
+@pytest.mark.version(2)
+class TestRecordResourceCsvV2(object):
+    @pytest.fixture
+    def response(self, endpoint, register):
+        register_name = register
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
+        item_json = requests.get(urljoin(endpoint, 'blobs/%s.json' % entry_json['blob-hash'][0])).json()
+
+        return requests.get(urljoin(endpoint, '/records/%s.csv' % item_json[register_name]))
+
+    def test_content_type(self, response):
+        assert parse_options_header(response.headers['content-type']) \
+               == ('text/csv', {'charset': 'UTF-8'})
+
+    def test_response_contents(self, response, endpoint):
+        csv_schema = get_schema(endpoint)
+        problems = csv_schema.validate(csv.reader(response.text.split('\r\n')))
+
+        assert problems == [], \
+            'There is a problem with Record resource csv'
+
+
+@pytest.mark.version(1)
 class TestRecordResourceTsv(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
+        item_json = requests.get(urljoin(endpoint, 'items/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/records/%s.tsv' % item_json[register_name]))
 
@@ -109,12 +163,13 @@ class TestRecordResourceTsv(object):
             'There is a problem with Record resource tsv'
 
 
+@pytest.mark.version(1)
 class TestRecordResourceTtl(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
-        item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
+        item_json = requests.get(urljoin(endpoint, 'items/%s.json' % entry_json['item-hash'][0])).json()
 
         return requests.get(urljoin(endpoint, '/records/%s.ttl' % item_json[register_name]))
 
