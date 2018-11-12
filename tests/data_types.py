@@ -18,6 +18,12 @@ ENTRY_NUMBER = {
     }
 }
 
+ENTRY_NUMBER_V2 = {
+    'entry-number': {
+        'type': 'integer'
+    }
+}
+
 ITEM_HASH = {
     'item-hash': {
         'type': 'string',

@@ -60,7 +60,7 @@ def entry_schema_v2():
     return {
             'type': 'object',
             'properties': {
-                **types.ENTRY_NUMBER,
+                **types.ENTRY_NUMBER_V2,
                 **types.BLOB_HASH,
                 **types.ENTRY_TIMESTAMP,
                 **types.ENTRY_KEY
@@ -96,7 +96,7 @@ def entries_schema_v2():
         'items': {
             'type': 'object',
             'properties': {
-                **types.ENTRY_NUMBER,
+                **types.ENTRY_NUMBER_V2,
                 **types.BLOB_HASH,
                 **types.ENTRY_TIMESTAMP,
                 **types.ENTRY_KEY
@@ -133,7 +133,7 @@ def record_schema_v2():
     return {
         'type': 'object',
         'properties': {
-            **types.ENTRY_NUMBER,
+            **types.ENTRY_NUMBER_V2,
             **types.ENTRY_KEY,
             **types.ENTRY_TIMESTAMP,
             **types.BLOB
@@ -151,7 +151,7 @@ def records_schema_v2():
             '^[A-Za-z0-9][A-Za-z0-9-_/]*$': {
                 'type': 'object',
                 'properties': {
-                    **types.ENTRY_NUMBER,
+                    **types.ENTRY_NUMBER_V2,
                     **types.ENTRY_KEY,
                     **types.ENTRY_TIMESTAMP,
                     **types.BLOB
