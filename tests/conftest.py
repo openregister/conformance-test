@@ -132,15 +132,13 @@ def record_schema_v1():
 def record_schema_v2():
     return {
         'type': 'object',
-            'properties': {
-                **types.ENTRY_NUMBER,
-                **types.ENTRY_KEY,
-                **types.ENTRY_TIMESTAMP,
-                **types.BLOB
-            },
-            'required': ['entry-number', 'key', 'entry-timestamp', 'blob'],
-            'additionalProperties': False
+        'properties': {
+            **types.ENTRY_NUMBER,
+            **types.ENTRY_KEY,
+            **types.ENTRY_TIMESTAMP,
+            **types.BLOB
         },
+        'required': ['entry-number', 'key', 'entry-timestamp', 'blob'],
         'additionalProperties': False
     }
 
@@ -159,7 +157,7 @@ def entry_csv_schema_v1():
 
 @pytest.fixture(scope='session')
 def entry_csv_schema_v2():
-    validator = CSVValidator(('index-entry-number', 'entry-number', 'entry-timestamp', 'key', 'blob-hash'))
+    validator = CSVValidator(('entry-number', 'entry-timestamp', 'key', 'blob-hash'))
     validator.add_header_check()
     validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
     validator.add_value_check('blob-hash', str, match_pattern(types.HASH_PATTERN))

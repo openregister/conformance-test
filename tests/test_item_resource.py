@@ -19,7 +19,7 @@ class ResourceTestBase:
     @pytest.fixture
     def blob_hash(self, endpoint):
         entry = requests.get(urljoin(endpoint, 'entries/1.json'))
-        return entry.json()[0]['blob-hash'][0]
+        return entry.json()['blob-hash']
 
     @pytest.fixture
     def item_response(self, endpoint, item_hash):
@@ -30,7 +30,7 @@ class ResourceTestBase:
         return requests.get(urljoin(endpoint, 'blobs/%s.%s' % (blob_hash, self.resource_type)))
 
     def get_schema(self, endpoint):
-        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
         validator = CSVValidator(register_fields)
@@ -43,7 +43,7 @@ class TestItemResourceJsonV1(ResourceTestBase):
     resource_type = 'json'
 
     def test_response_contents(self, item_response, endpoint):
-        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
         assert set(item_response.json().keys()).issubset(register_fields), \
@@ -58,7 +58,7 @@ class TestItemResourceJsonV2(ResourceTestBase):
     resource_type = 'json'
 
     def test_response_contents(self, blob_response, endpoint):
-        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
         assert set(blob_response.json().keys()).issubset(register_fields), \
@@ -73,7 +73,7 @@ class TestItemResourceYaml(ResourceTestBase):
     resource_type = 'yaml'
 
     def test_response_contents(self, item_response, endpoint):
-        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
         assert set(yaml.load(item_response.text).keys()).issubset(register_fields), \
@@ -137,7 +137,7 @@ class TestItemResourceTtl(ResourceTestBase):
     resource_type = 'ttl'
 
     def test_response_contents(self, item_response, endpoint, entry_ttl_schema, register_domain):
-        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
         namespace = 'http://field.%s/records/' % register_domain
 

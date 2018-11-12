@@ -18,7 +18,7 @@ class TestRecordResourceJsonV1(object):
         entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'items/%s.json' % entry_json['item-hash'][0])).json()
 
-        return item_json[register_name], requests.get(urljoin(endpoint, '/records/%s.json' % item_json[register_name]))
+        return item_json[register_name], requests.get(urljoin(endpoint, 'records/%s.json' % item_json[register_name]))
 
     def test_content_type(self, response):
         key, record_response = response
@@ -30,7 +30,7 @@ class TestRecordResourceJsonV1(object):
         record_json = record_response.json()
         validate(record_json, record_schema_v1)
 
-        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
         assert set(record_json[key]['item'][0].keys()).issubset(register_fields), \
@@ -42,10 +42,10 @@ class TestRecordResourceJsonV2(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
-        blob_json = requests.get(urljoin(endpoint, 'blobs/%s.json' % entry_json['blob-hash'][0])).json()
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()
+        blob_json = requests.get(urljoin(endpoint, 'blobs/%s.json' % entry_json['blob-hash'])).json()
 
-        return blob_json[register_name], requests.get(urljoin(endpoint, '/records/%s.json' % blob_json[register_name]))
+        return blob_json[register_name], requests.get(urljoin(endpoint, 'records/%s.json' % blob_json[register_name]))
 
     def test_content_type(self, response):
         key, record_response = response
@@ -57,10 +57,10 @@ class TestRecordResourceJsonV2(object):
         record_json = record_response.json()
         validate(record_json, record_schema_v2)
 
-        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
-        assert set(record_json[key]['item'][0].keys()).issubset(register_fields), \
+        assert set(record_json['blob'].keys()).issubset(register_fields), \
             'Record contains unrecognized keys'
 
 
@@ -72,7 +72,7 @@ class TestRecordResourceYaml(object):
         entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'items/%s.json' % entry_json['item-hash'][0])).json()
 
-        return item_json[register_name], requests.get(urljoin(endpoint, '/records/%s.yaml' % item_json[register_name]))
+        return item_json[register_name], requests.get(urljoin(endpoint, 'records/%s.yaml' % item_json[register_name]))
 
 
     def test_content_type(self, response):
@@ -88,7 +88,7 @@ class TestRecordResourceYaml(object):
         record_json = yaml.load(record_response.text)
         validate(record_json, record_schema_v1)
 
-        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
         item_field_names = record_json[key]['item'][0].keys()
@@ -105,7 +105,7 @@ class TestRecordResourceCsvV1(object):
         entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'items/%s.json' % entry_json['item-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/records/%s.csv' % item_json[register_name]))
+        return requests.get(urljoin(endpoint, 'records/%s.csv' % item_json[register_name]))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
@@ -124,10 +124,10 @@ class TestRecordResourceCsvV2(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
-        item_json = requests.get(urljoin(endpoint, 'blobs/%s.json' % entry_json['blob-hash'][0])).json()
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()
+        item_json = requests.get(urljoin(endpoint, 'blobs/%s.json' % entry_json['blob-hash'])).json()
 
-        return requests.get(urljoin(endpoint, '/records/%s.csv' % item_json[register_name]))
+        return requests.get(urljoin(endpoint, 'records/%s.csv' % item_json[register_name]))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
@@ -149,7 +149,7 @@ class TestRecordResourceTsv(object):
         entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'items/%s.json' % entry_json['item-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/records/%s.tsv' % item_json[register_name]))
+        return requests.get(urljoin(endpoint, 'records/%s.tsv' % item_json[register_name]))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
@@ -171,7 +171,7 @@ class TestRecordResourceTtl(object):
         entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'items/%s.json' % entry_json['item-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/records/%s.ttl' % item_json[register_name]))
+        return requests.get(urljoin(endpoint, 'records/%s.ttl' % item_json[register_name]))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
@@ -179,7 +179,7 @@ class TestRecordResourceTtl(object):
 
     def test_response_contents(self, response, endpoint, record_ttl_schema, register_domain):
         field_namespace = 'http://field.%s/records/' % register_domain
-        register_data = requests.get(urljoin(endpoint, '/register.json'))
+        register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
         record_ttl_schema.add_data(response.text)
@@ -195,7 +195,7 @@ class TestRecordResourceTtl(object):
 
 def get_schema_v1(endpoint):
     field_names = ['index-entry-number','entry-number', 'entry-timestamp', 'key']
-    register_data = requests.get(urljoin(endpoint, '/register.json'))
+    register_data = requests.get(urljoin(endpoint, 'register.json'))
     register_fields = register_data.json()['register-record']['fields']
     field_names += register_fields
 
@@ -210,7 +210,7 @@ def get_schema_v1(endpoint):
 
 def get_schema_v2(endpoint):
     field_names = ['entry-number', 'entry-timestamp', 'key']
-    register_data = requests.get(urljoin(endpoint, '/register.json'))
+    register_data = requests.get(urljoin(endpoint, 'register.json'))
     register_fields = register_data.json()['register-record']['fields']
     field_names += register_fields
 
