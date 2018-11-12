@@ -22,14 +22,15 @@ class TestRecordsResourceJsonV2(object):
         assert response.headers['content-type'] == 'application/json'
 
     def test_response_contents(self, response, endpoint, records_schema_v2):
-        record_json = response.json()
-        validate(record_json, records_schema_v2)
+        records_json = response.json()
+        validate(records_json, records_schema_v2)
 
         register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
-
-        assert set(record_json['blob'].keys()).issubset(register_fields), \
-            'Record contains unrecognized keys'
+        assert all(
+            set(record_json['blob'].keys()).issubset(register_fields)
+            for record_json in records_json.values()
+        ), 'Record contains unrecognized keys'
 
 
 @pytest.mark.version(2)
