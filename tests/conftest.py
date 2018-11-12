@@ -144,6 +144,26 @@ def record_schema_v2():
 
 
 @pytest.fixture(scope='session')
+def records_schema_v2():
+    return {
+        'type': 'object',
+        'patternProperties': {
+            '^[A-Za-z0-9][A-Za-z0-9-_/]*$': {
+                'type': 'object',
+                'properties': {
+                    **types.ENTRY_NUMBER,
+                    **types.ENTRY_KEY,
+                    **types.ENTRY_TIMESTAMP,
+                    **types.BLOB
+                },
+                'required': ['entry-number', 'key', 'entry-timestamp', 'blob'],
+                'additionalProperties': False
+            }
+        }
+    }
+
+
+@pytest.fixture(scope='session')
 def entry_csv_schema_v1():
     validator = CSVValidator(('index-entry-number', 'entry-number', 'entry-timestamp', 'key', 'item-hash'))
     validator.add_header_check()
