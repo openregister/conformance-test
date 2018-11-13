@@ -16,7 +16,7 @@ class TestRecordEntriesResourceJsonV1(object):
         entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'items/%s.json' % entry_json['item-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/records/%s/entries.json' % item_json[register_name]))
+        return requests.get(urljoin(endpoint, 'records/%s/entries.json' % item_json[register_name]))
 
     def test_content_type(self, response):
         assert response.headers['content-type'] == 'application/json'
@@ -30,8 +30,8 @@ class TestRecordEntriesResourceJsonV2(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
-        blob_json = requests.get(urljoin(endpoint, 'blobs/%s.json' % entry_json['blob-hash'][0])).json()
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()
+        blob_json = requests.get(urljoin(endpoint, 'blobs/%s.json' % entry_json['blob-hash'])).json()
 
         return requests.get(urljoin(endpoint, 'records/%s/entries.json' % blob_json[register_name]))
 
@@ -50,7 +50,7 @@ class TestRecordEntriesResourceYaml(object):
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/records/%s/entries.yaml' % item_json[register_name]))
+        return requests.get(urljoin(endpoint, 'records/%s/entries.yaml' % item_json[register_name]))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
@@ -68,7 +68,7 @@ class TestRecordEntriesResourceCsvV1(object):
         entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/records/%s/entries.csv' % item_json[register_name]))
+        return requests.get(urljoin(endpoint, 'records/%s/entries.csv' % item_json[register_name]))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \
@@ -85,8 +85,8 @@ class TestRecordEntriesResourceCsvV2(object):
     @pytest.fixture
     def response(self, endpoint, register):
         register_name = register
-        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()[0]
-        blob_json = requests.get(urljoin(endpoint, 'blobs/%s.json' % entry_json['blob-hash'][0])).json()
+        entry_json = requests.get(urljoin(endpoint, 'entries/1.json')).json()
+        blob_json = requests.get(urljoin(endpoint, 'blobs/%s.json' % entry_json['blob-hash'])).json()
 
         return requests.get(urljoin(endpoint, 'records/%s/entries.csv' % blob_json[register_name]))
 
@@ -128,7 +128,7 @@ class TestRecordEntriesResourceTtl(object):
         entry_json = requests.get(urljoin(endpoint, 'entry/1.json')).json()[0]
         item_json = requests.get(urljoin(endpoint, 'item/%s.json' % entry_json['item-hash'][0])).json()
 
-        return requests.get(urljoin(endpoint, '/records/%s/entries.ttl' % item_json[register_name]))
+        return requests.get(urljoin(endpoint, 'records/%s/entries.ttl' % item_json[register_name]))
 
     def test_content_type(self, response):
         assert parse_options_header(response.headers['content-type']) \

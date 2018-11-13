@@ -58,21 +58,15 @@ def entry_schema_v1():
 @pytest.fixture(scope='session')
 def entry_schema_v2():
     return {
-            'type': 'array',
-            'minItems': 1,
-            'maxItems': 1,
-            'items': {
-                'type': 'object',
-                'properties': {
-                    **types.INDEX_ENTRY_NUMBER,
-                    **types.ENTRY_NUMBER,
-                    **types.BLOB_HASH_ARRAY,
-                    **types.ENTRY_TIMESTAMP,
-                    **types.ENTRY_KEY
-                },
-                'required': ['index-entry-number','entry-number', 'blob-hash', 'entry-timestamp', 'key'],
-                'additionalProperties': False
-            }
+            'type': 'object',
+            'properties': {
+                **types.ENTRY_NUMBER_V2,
+                **types.BLOB_HASH,
+                **types.ENTRY_TIMESTAMP,
+                **types.ENTRY_KEY
+            },
+            'required': ['entry-number', 'blob-hash', 'entry-timestamp', 'key'],
+            'additionalProperties': False
         }
 
 
@@ -102,20 +96,19 @@ def entries_schema_v2():
         'items': {
             'type': 'object',
             'properties': {
-                **types.INDEX_ENTRY_NUMBER,
-                **types.ENTRY_NUMBER,
-                **types.BLOB_HASH_ARRAY,
+                **types.ENTRY_NUMBER_V2,
+                **types.BLOB_HASH,
                 **types.ENTRY_TIMESTAMP,
                 **types.ENTRY_KEY
             },
-            'required': ['index-entry-number','entry-number', 'blob-hash', 'entry-timestamp', 'key'],
+            'required': ['entry-number', 'blob-hash', 'entry-timestamp', 'key'],
             'additionalProperties': False
         }
     }
 
 
 @pytest.fixture(scope='session')
-def record_schema():
+def record_schema_v1():
     return {
         'type': 'object',
         'patternProperties': {
@@ -127,11 +120,46 @@ def record_schema():
                     **types.ENTRY_TIMESTAMP,
                     **types.ITEM
                 },
-                'required': ['index-entry-number', 'entry-number', 'key', 'entry-timestamp'],
+                'required': ['index-entry-number', 'entry-number', 'key', 'entry-timestamp', 'item'],
                 'additionalProperties': False
             }
         },
         'additionalProperties': False
+    }
+
+
+@pytest.fixture(scope='session')
+def record_schema_v2():
+    return {
+        'type': 'object',
+        'properties': {
+            **types.ENTRY_NUMBER_V2,
+            **types.ENTRY_KEY,
+            **types.ENTRY_TIMESTAMP,
+            **types.BLOB
+        },
+        'required': ['entry-number', 'key', 'entry-timestamp', 'blob'],
+        'additionalProperties': False
+    }
+
+
+@pytest.fixture(scope='session')
+def records_schema_v2():
+    return {
+        'type': 'object',
+        'patternProperties': {
+            '^[A-Za-z0-9][A-Za-z0-9-_/]*$': {
+                'type': 'object',
+                'properties': {
+                    **types.ENTRY_NUMBER_V2,
+                    **types.ENTRY_KEY,
+                    **types.ENTRY_TIMESTAMP,
+                    **types.BLOB
+                },
+                'required': ['entry-number', 'key', 'entry-timestamp', 'blob'],
+                'additionalProperties': False
+            }
+        }
     }
 
 
@@ -149,9 +177,8 @@ def entry_csv_schema_v1():
 
 @pytest.fixture(scope='session')
 def entry_csv_schema_v2():
-    validator = CSVValidator(('index-entry-number', 'entry-number', 'entry-timestamp', 'key', 'blob-hash'))
+    validator = CSVValidator(('entry-number', 'entry-timestamp', 'key', 'blob-hash'))
     validator.add_header_check()
-    validator.add_value_check('index-entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
     validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
     validator.add_value_check('blob-hash', str, match_pattern(types.HASH_PATTERN))
     validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))

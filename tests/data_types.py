@@ -18,6 +18,12 @@ ENTRY_NUMBER = {
     }
 }
 
+ENTRY_NUMBER_V2 = {
+    'entry-number': {
+        'type': 'integer'
+    }
+}
+
 ITEM_HASH = {
     'item-hash': {
         'type': 'string',
@@ -35,13 +41,10 @@ ITEM_HASH_ARRAY = {
     }
 }
 
-BLOB_HASH_ARRAY = {
+BLOB_HASH = {
     'blob-hash': {
-        'type': 'array',
-        'items': {
-            'type': 'string',
-            'pattern': HASH_PATTERN
-        }
+        'type': 'string',
+        'pattern': HASH_PATTERN
     }
 }
 
@@ -51,6 +54,12 @@ ITEM = {
         'items': {
             'type': 'object'
         }
+    }
+}
+
+BLOB = {
+    'blob': {
+        'type': 'object'
     }
 }
 
