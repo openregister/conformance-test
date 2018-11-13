@@ -2,7 +2,6 @@ import pytest
 
 import tests.data_types as types
 from csvvalidator import *
-from .ttlvalidator import TtlValidator
 
 
 def pytest_addoption(parser):
@@ -183,23 +182,4 @@ def entry_csv_schema_v2():
     validator.add_value_check('blob-hash', str, match_pattern(types.HASH_PATTERN))
     validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))
     validator.add_value_check('key', str, match_pattern(types.KEY_PATTERN))
-    return validator
-
-
-@pytest.fixture(scope='session')
-def entry_ttl_schema():
-    validator = TtlValidator()
-    validator.add_entry_regex('entry-number-field', types.ENTRY_NUMBER_PATTERN)
-    validator.add_entry_regex('entry-timestamp-field', types.TIMESTAMP_PATTERN)
-    validator.add_entry_regex('item-resource', types.ITEM_RESOURCE_PATTERN)
-    validator.add_entry_regex('key-field', types.KEY_PATTERN)
-    return validator
-
-
-@pytest.fixture(scope='session')
-def record_ttl_schema():
-    validator = TtlValidator()
-    validator.add_entry_regex('entry-number-field', types.ENTRY_NUMBER_PATTERN)
-    validator.add_entry_regex('entry-timestamp-field', types.TIMESTAMP_PATTERN)
-    validator.add_entry_regex('item-resource', types.ITEM_RESOURCE_PATTERN)
     return validator

@@ -1,6 +1,5 @@
 import pytest
 import requests
-import yaml
 
 import tests.data_types as types
 from jsonschema import validate
@@ -61,17 +60,3 @@ class TestRegisterResourceJson(object):
     @pytest.mark.xfail(reason='Missing total-items')
     def test_response_contents(self, response):
         validate(response.json(), REGISTER_RESOURCE_SCHEMA)
-
-
-@pytest.mark.version(1)
-class TestRegisterResourceYaml(object):
-    @pytest.fixture
-    def response(self, endpoint):
-        return requests.get(urljoin(endpoint, 'register.yaml'))
-
-    def test_content_type(self, response):
-        assert response.headers['content-type'] == 'text/yaml;charset=UTF-8'
-
-    @pytest.mark.xfail(reason='missing total-items')
-    def test_response_contents(self, response):
-        validate(yaml.load(response.text), REGISTER_RESOURCE_SCHEMA)

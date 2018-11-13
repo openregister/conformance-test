@@ -33,7 +33,6 @@ setup(name='openregister-conformance',
       tests_require=['pytest>=2.9.0'],
       install_requires=[
         'pytest>=2.9.0',
-        'PyYAML>=3.11',
         'requests>=2.9.1',
         'Werkzeug>=0.11.5'
       ]
