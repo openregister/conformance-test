@@ -1,7 +1,6 @@
 import csv
 import pytest
 import requests
-import yaml
 
 import tests.data_types as types
 from csvvalidator import *
