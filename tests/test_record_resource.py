@@ -59,7 +59,7 @@ class TestRecordResourceJsonV2(object):
         register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
-        assert set(record_json['blob'].keys()).issubset(register_fields), \
+        assert set(record_json.keys()).issubset(register_fields), \
             'Record contains unrecognized keys'
 
 
@@ -108,29 +108,24 @@ class TestRecordResourceCsvV2(object):
 
 
 def get_schema_v1(endpoint):
-    field_names = ['index-entry-number','entry-number', 'entry-timestamp', 'key']
+    field_names = ['_id']
     register_data = requests.get(urljoin(endpoint, 'register.json'))
     register_fields = register_data.json()['register-record']['fields']
     field_names += register_fields
 
     validator = CSVValidator(field_names)
     validator.add_header_check()
-    validator.add_value_check('index-entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
-    validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
-    validator.add_value_check('key', str, match_pattern(types.KEY_PATTERN))
-    validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))
+    validator.add_value_check('_id', str, match_pattern(types.KEY_PATTERN))
     return validator
 
 
 def get_schema_v2(endpoint):
-    field_names = ['entry-number', 'entry-timestamp', 'key']
+    field_names = ['_id']
     register_data = requests.get(urljoin(endpoint, 'register.json'))
     register_fields = register_data.json()['register-record']['fields']
     field_names += register_fields
 
     validator = CSVValidator(field_names)
     validator.add_header_check()
-    validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
-    validator.add_value_check('key', str, match_pattern(types.KEY_PATTERN))
-    validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))
+    validator.add_value_check('_id', str, match_pattern(types.KEY_PATTERN))
     return validator
