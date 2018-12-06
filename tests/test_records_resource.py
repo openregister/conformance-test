@@ -26,9 +26,14 @@ class TestRecordsResourceJsonV2(object):
         register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
         assert all(
-            set(record_json.keys()).issubset(register_fields + ['_id'])
+            set(record_json.keys() - ['_id']).issubset(register_fields)
             for record_json in records_json
-        ), 'Record contains unrecognized keys'
+        )
+        assert all(
+            '_id' in record_json
+            for record_json in records_json
+        ),\
+                 'Record contains unrecognized keys'
 
 
 @pytest.mark.version(2)
