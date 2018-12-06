@@ -59,7 +59,8 @@ class TestRecordResourceJsonV2(object):
         register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
 
-        assert set(record_json.keys()).issubset(register_fields + ['_id']), \
+        assert '_id' in record_json
+        assert set(record_json.keys() - ['_id']).issubset(register_fields), \
             'Record contains unrecognized keys'
 
 
