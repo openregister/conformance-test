@@ -132,7 +132,7 @@ def record_schema_v2():
     return {
         'type': 'object',
         'properties': {
-            **types.ENTRY_KEY,
+            **types.RECORD_ID,
         },
         'required': ['_id'],
         'additionalProperties': True
@@ -147,7 +147,7 @@ def records_schema_v2():
             '^[A-Za-z0-9][A-Za-z0-9-_/]*$': {
                 'type': 'object',
                 'properties': {
-                    **types.ENTRY_KEY,
+                    **types.RECORD_ID,
                 },
                 'required': ['_id'],
                 'additionalProperties': True

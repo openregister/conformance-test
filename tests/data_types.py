@@ -76,3 +76,10 @@ ENTRY_KEY = {
         'pattern': KEY_PATTERN
     }
 }
+
+RECORD_ID = {
+    '_id': {
+        'type': 'string',
+        'pattern': KEY_PATTERN
+    }
+}

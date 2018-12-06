@@ -14,7 +14,6 @@ from .test_record_resource import get_schema_v2
 class TestRecordsResourceJsonV2(object):
     @pytest.fixture
     def response(self, endpoint, register):
-        register_name = register
         return requests.get(urljoin(endpoint, 'records.json'))
 
     def test_content_type(self, response):
@@ -36,7 +35,6 @@ class TestRecordsResourceJsonV2(object):
 class TestRecordsResourceCsvV2(object):
     @pytest.fixture
     def response(self, endpoint, register):
-        register_name = register
 
         return requests.get(urljoin(endpoint, 'records.csv'))
 
