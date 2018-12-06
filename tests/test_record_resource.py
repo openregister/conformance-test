@@ -123,14 +123,12 @@ def get_schema_v1(endpoint):
 
 
 def get_schema_v2(endpoint):
-    field_names = ['entry-number', 'entry-timestamp', 'key']
+    field_names = ['_id']
     register_data = requests.get(urljoin(endpoint, 'register.json'))
     register_fields = register_data.json()['register-record']['fields']
     field_names += register_fields
 
     validator = CSVValidator(field_names)
     validator.add_header_check()
-    validator.add_value_check('entry-number', str, match_pattern(types.ENTRY_NUMBER_PATTERN))
-    validator.add_value_check('key', str, match_pattern(types.KEY_PATTERN))
-    validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))
+    validator.add_value_check('_id', str, match_pattern(types.KEY_PATTERN))
     return validator
