@@ -3,6 +3,7 @@ ENTRY_NUMBER_PATTERN = '^\d+$'
 KEY_PATTERN = '.+'
 HASH_PATTERN = '^sha-256:[a-f\d]{64}$'
 ITEM_RESOURCE_PATTERN = '/items/sha-256:[a-f\d]{64}$'
+NAME_PATTERN = '^[A-Za-z]{1}[A-Za-z0-9][A-Za-z0-9-_/]*$'
 
 INDEX_ENTRY_NUMBER = {
     'index-entry-number': {

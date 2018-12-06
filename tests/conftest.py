@@ -131,11 +131,14 @@ def record_schema_v1():
 def record_schema_v2():
     return {
         'type': 'object',
+        "propertyNames": {
+            "pattern": types.NAME_PATTERN
+        },
         'properties': {
             **types.RECORD_ID,
         },
         'required': ['_id'],
-        'additionalProperties': True
+        'additionalProperties': { "type": "string" }
     }
 
 
@@ -150,7 +153,7 @@ def records_schema_v2():
                     **types.RECORD_ID,
                 },
                 'required': ['_id'],
-                'additionalProperties': True
+                'additionalProperties': { "type": "string" }
             }
         }
     }
