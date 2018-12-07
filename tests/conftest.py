@@ -138,7 +138,7 @@ def record_schema_v2():
             **types.RECORD_ID,
         },
         'required': ['_id'],
-        'additionalProperties': { "type": "string" }
+        'additionalProperties': {"type": "string"}
     }
 
 
@@ -149,11 +149,14 @@ def records_schema_v2():
         'patternProperties': {
             '^[A-Za-z0-9][A-Za-z0-9-_/]*$': {
                 'type': 'object',
+                "propertyNames" : {
+                    "pattern": types.NAME_PATTERN
+                },
                 'properties': {
                     **types.RECORD_ID,
                 },
                 'required': ['_id'],
-                'additionalProperties': { "type": "string" }
+                'additionalProperties': {"type": "string"}
             }
         }
     }
