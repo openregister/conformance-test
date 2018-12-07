@@ -146,8 +146,7 @@ def record_schema_v2():
 def records_schema_v2():
     return {
         'type': 'array',
-        'patternProperties': {
-            '^[A-Za-z0-9][A-Za-z0-9-_/]*$': {
+        'items': {
                 'type': 'object',
                 "propertyNames" : {
                     "pattern": types.NAME_PATTERN
@@ -159,7 +158,6 @@ def records_schema_v2():
                 'additionalProperties': {"type": "string"}
             }
         }
-    }
 
 
 @pytest.fixture(scope='session')
