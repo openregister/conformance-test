@@ -131,35 +131,33 @@ def record_schema_v1():
 def record_schema_v2():
     return {
         'type': 'object',
-        'properties': {
-            **types.ENTRY_NUMBER_V2,
-            **types.ENTRY_KEY,
-            **types.ENTRY_TIMESTAMP,
-            **types.BLOB
+        "propertyNames": {
+            "pattern": types.NAME_PATTERN
         },
-        'required': ['entry-number', 'key', 'entry-timestamp', 'blob'],
-        'additionalProperties': False
+        'properties': {
+            **types.RECORD_ID,
+        },
+        'required': ['_id'],
+        'additionalProperties': {"type": "string"}
     }
 
 
 @pytest.fixture(scope='session')
 def records_schema_v2():
     return {
-        'type': 'object',
-        'patternProperties': {
-            '^[A-Za-z0-9][A-Za-z0-9-_/]*$': {
+        'type': 'array',
+        'items': {
                 'type': 'object',
-                'properties': {
-                    **types.ENTRY_NUMBER_V2,
-                    **types.ENTRY_KEY,
-                    **types.ENTRY_TIMESTAMP,
-                    **types.BLOB
+                "propertyNames" : {
+                    "pattern": types.NAME_PATTERN
                 },
-                'required': ['entry-number', 'key', 'entry-timestamp', 'blob'],
-                'additionalProperties': False
+                'properties': {
+                    **types.RECORD_ID,
+                },
+                'required': ['_id'],
+                'additionalProperties': {"type": "string"}
             }
         }
-    }
 
 
 @pytest.fixture(scope='session')

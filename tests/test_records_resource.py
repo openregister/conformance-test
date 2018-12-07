@@ -14,7 +14,6 @@ from .test_record_resource import get_schema_v2
 class TestRecordsResourceJsonV2(object):
     @pytest.fixture
     def response(self, endpoint, register):
-        register_name = register
         return requests.get(urljoin(endpoint, 'records.json'))
 
     def test_content_type(self, response):
@@ -27,16 +26,20 @@ class TestRecordsResourceJsonV2(object):
         register_data = requests.get(urljoin(endpoint, 'register.json'))
         register_fields = register_data.json()['register-record']['fields']
         assert all(
-            set(record_json['blob'].keys()).issubset(register_fields)
-            for record_json in records_json.values()
-        ), 'Record contains unrecognized keys'
+            set(record_json.keys() - ['_id']).issubset(register_fields)
+            for record_json in records_json
+        )
+        assert all(
+            '_id' in record_json
+            for record_json in records_json
+        ),\
+                 'Record contains unrecognized keys'
 
 
 @pytest.mark.version(2)
 class TestRecordsResourceCsvV2(object):
     @pytest.fixture
     def response(self, endpoint, register):
-        register_name = register
 
         return requests.get(urljoin(endpoint, 'records.csv'))
 
