@@ -138,7 +138,11 @@ def record_schema_v2():
             **types.RECORD_ID,
         },
         'required': ['_id'],
-        'additionalProperties': {"type": "string"}
+        'additionalProperties':  {"oneOf": [
+            {"type": "string"},
+            {"type": "array", 'items': {'type': 'string'}}
+        ]
+        }
     }
 
 
@@ -147,17 +151,21 @@ def records_schema_v2():
     return {
         'type': 'array',
         'items': {
-                'type': 'object',
-                "propertyNames" : {
-                    "pattern": types.NAME_PATTERN
-                },
-                'properties': {
-                    **types.RECORD_ID,
-                },
-                'required': ['_id'],
-                'additionalProperties': {"type": "string"}
+            'type': 'object',
+            "propertyNames" : {
+                "pattern": types.NAME_PATTERN
+            },
+            'properties': {
+                **types.RECORD_ID,
+            },
+            'required': ['_id'],
+            'additionalProperties':  {"oneOf": [
+                {"type": "string"},
+                {"type": "array", 'items': {'type': 'string'}}
+            ]
             }
         }
+    }
 
 
 @pytest.fixture(scope='session')
