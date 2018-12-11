@@ -49,6 +49,13 @@ BLOB_HASH = {
     }
 }
 
+BLOB_ID = {
+    '_id': {
+        'type': 'string',
+        'pattern': HASH_PATTERN
+    }
+}
+
 ITEM = {
     'item': {
         'type': 'array',
