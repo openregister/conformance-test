@@ -1,6 +1,7 @@
 import csv
 import pytest
 import requests
+import multihash
 
 from urllib.parse import urljoin
 from jsonschema import validate
@@ -25,6 +26,11 @@ class TestEntriesResourceJson(object):
     def test_response_contents(self, response, entries_schema_v2):
         validate(response.json(), entries_schema_v2)
 
+    @pytest.mark.version(2)
+    def test_hash_format(self, response):
+        for entry in response.json():
+            blob_hash = entry['blob-hash']
+            assert multihash.is_valid(bytes.fromhex(blob_hash))
 
 class TestEntriesResourceCsv(object):
     @pytest.fixture
@@ -48,3 +54,11 @@ class TestEntriesResourceCsv(object):
         problems = entry_csv_schema_v2.validate(csv.reader(response.text.split('\r\n')))
         assert problems == [], \
             'There is a problem with Entries resource csv'
+
+    @pytest.mark.version(2)
+    def test_hash_format(self, response):
+        reader = csv.DictReader((line.decode('utf8') for line in response.iter_lines()))
+
+        for entry in reader:
+            blob_hash = entry['blob-hash']
+            assert multihash.is_valid(bytes.fromhex(blob_hash))

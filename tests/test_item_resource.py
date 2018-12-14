@@ -1,6 +1,7 @@
 import csv
 import pytest
 import requests
+import multihash
 
 from csvvalidator import *
 from urllib.parse import urljoin
@@ -67,6 +68,11 @@ class TestItemResourceJsonV2(ResourceTestBase):
     def test_content_type(self, blob_response):
         assert blob_response.headers['content-type'] == 'application/json'
 
+    def test_hash_format(self, blob_response, endpoint):
+        blob = blob_response.json()
+        blob_id = blob['_id']
+        assert multihash.is_valid(bytes.fromhex(blob_id))
+
 
 @pytest.mark.version(1)
 class TestItemResourceCsv(ResourceTestBase):
@@ -102,3 +108,10 @@ class TestItemResourceCsv(ResourceTestBase):
     def test_content_type(self, blob_response):
         assert parse_options_header(blob_response.headers['content-type']) \
                == ('text/csv', {'charset': 'UTF-8'})
+
+    def test_hash_format(self, endpoint, blob_response):
+        reader = csv.DictReader((line.decode('utf8') for line in blob_response.iter_lines()))
+
+        for blob in reader:
+            blob_id = blob['_id']
+            assert multihash.is_valid(bytes.fromhex(blob_id))
