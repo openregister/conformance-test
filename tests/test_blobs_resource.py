@@ -6,6 +6,7 @@ import warnings
 from csvvalidator import CSVValidator
 from urllib.parse import urljoin
 from jsonschema import validate
+from multihash import multihash
 
 @pytest.fixture
 def register_fields(endpoint):
@@ -32,6 +33,14 @@ class TestBlobsResourceJSON:
             blob_keys = set(blob.keys() - ['_id'])
             assert blob_keys.issubset(register_fields), 'Blob json does not match fields specified in the register definition'
 
+    def test_hash_format(self, endpoint):
+        response = requests.get(urljoin(endpoint, 'blobs'))
+        parsed_response = response.json()
+
+        for blob in parsed_response:
+            blob_id = blob['_id']
+            assert multihash.is_valid(bytes.fromhex(blob_id))
+
     def test_content_type(self, endpoint):
         response = requests.get(urljoin(endpoint, 'blobs'))
 
@@ -49,6 +58,14 @@ class TestBlobsResourceCSV:
         problems = validator.validate(csv.reader(response.text.split('\r\n')))
 
         assert problems == [], '/blobs CSV fields do not match the register definition'
+
+    def test_hash_format(self, endpoint):
+        response = requests.get(urljoin(endpoint, 'blobs.csv'))
+        reader = csv.DictReader((line.decode('utf8') for line in response.iter_lines()))
+
+        for blob in reader:
+            blob_id = blob['_id']
+            assert multihash.is_valid(bytes.fromhex(blob_id))
 
     def test_content_type(self, endpoint):
         response = requests.get(urljoin(endpoint, 'blobs.csv'))

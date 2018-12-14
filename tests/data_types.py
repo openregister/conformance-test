@@ -2,6 +2,7 @@ TIMESTAMP_PATTERN = '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
 ENTRY_NUMBER_PATTERN = '^\d+$'
 KEY_PATTERN = '.+'
 HASH_PATTERN = '^sha-256:[a-f\d]{64}$'
+MULTIHASH_PATTERN = '^[a-f\d]+$'
 ITEM_RESOURCE_PATTERN = '/items/sha-256:[a-f\d]{64}$'
 NAME_PATTERN = '^[A-Za-z]{1}[A-Za-z0-9][A-Za-z0-9-_/]*$'
 
@@ -45,14 +46,14 @@ ITEM_HASH_ARRAY = {
 BLOB_HASH = {
     'blob-hash': {
         'type': 'string',
-        'pattern': HASH_PATTERN
+        'pattern': MULTIHASH_PATTERN
     }
 }
 
 BLOB_ID = {
     '_id': {
         'type': 'string',
-        'pattern': HASH_PATTERN
+        'pattern': MULTIHASH_PATTERN
     }
 }
 
