@@ -92,3 +92,75 @@ RECORD_ID = {
         'pattern': KEY_PATTERN
     }
 }
+
+HASHING_ALGORITHM = {
+    'type': 'object',
+    'properties': {
+        'digest-length': {'type': 'integer'},
+        'function-type': {'type': 'integer'},
+        'codec': {'type': 'string'}
+    },
+    'required': ['digest-length', 'function-type', 'codec']
+}
+
+STATISTICS = {
+    'type': 'object',
+    'properties': {
+        'total-records': {'type': 'integer'},
+        'total-entries': {'type': 'integer'},
+        'total-items': {'type': 'integer'}
+    },
+    'required': ['total-records', 'total-entries', 'total-items']
+}
+
+STATUS = {
+    'type': 'object',
+    'properties': {
+        'start-date': {'type': 'string', 'format': 'date-time'},
+        'end-date': {'type': 'string', 'format': 'date-time'},
+        'replacement': {'type': 'string', 'format': 'uri'},
+        'reason': {'type': 'string'}
+    },
+    'required': ['start-date']
+}
+
+SCHEMA = {
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": KEY_PATTERN,
+      },
+      "datatype": {
+        "type": "string",
+        "enum": [
+          "curie",
+          "datetime",
+          "name",
+          "hash",
+          "integer",
+          "period",
+          "string",
+          "text",
+          "url"
+        ]
+      },
+      "cardinality": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "datatype",
+      "cardinality"
+    ]
+  }
+}

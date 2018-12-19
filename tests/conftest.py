@@ -1,4 +1,6 @@
 import pytest
+import requests
+from urllib.parse import urljoin
 
 import tests.data_types as types
 from csvvalidator import *
@@ -212,6 +214,36 @@ def blob_schema():
 
 
 @pytest.fixture(scope='session')
+def context_schema():
+    return {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string",
+                "pattern": types.NAME_PATTERN
+            },
+            "title": {"type": "string"},
+            "copyright": {"type": "string"},
+            "custodian": {"type": "string"},
+            "description": {"type": "string"},
+            "hashing_algorithm": types.HASHING_ALGORITHM,
+            "licence": {"type": "string"},
+            "root-hash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]+$"
+            },
+            "schema": types.SCHEMA,
+            "statistics": types.STATISTICS,
+            "status": types.STATUS,
+            "title": {
+            "type": "string"
+            }
+        },
+        "required": ["id", "hashing-algorithm", "root-hash", "schema", "statistics", "status"]
+    }
+
+
+@pytest.fixture(scope='session')
 def entry_csv_schema_v1():
     validator = CSVValidator(('index-entry-number', 'entry-number', 'entry-timestamp', 'key', 'item-hash'))
     validator.add_header_check()
@@ -232,3 +264,8 @@ def entry_csv_schema_v2():
     validator.add_value_check('entry-timestamp', str, match_pattern(types.TIMESTAMP_PATTERN))
     validator.add_value_check('key', str, match_pattern(types.KEY_PATTERN))
     return validator
+
+
+def get_register_fields(endpoint):
+    register_data = requests.get(urljoin(endpoint, 'context.json'))
+    return [field['id'] for field in register_data.json()['schema']]

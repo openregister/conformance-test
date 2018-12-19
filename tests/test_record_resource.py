@@ -7,6 +7,12 @@ from csvvalidator import *
 from jsonschema import validate
 from urllib.parse import urljoin
 from werkzeug.http import parse_options_header
+from .conftest import get_register_fields
+
+
+@pytest.fixture
+def register_fields(endpoint):
+    return get_register_fields(endpoint)
 
 
 @pytest.mark.version(1)
@@ -50,14 +56,11 @@ class TestRecordResourceJsonV2(object):
         key, record_response = response
         assert record_response.headers['content-type'] == 'application/json'
 
-    def test_response_contents(self, response, endpoint, record_schema_v2):
+    def test_response_contents(self, response, endpoint, record_schema_v2, register_fields):
         key, record_response = response
 
         record_json = record_response.json()
         validate(record_json, record_schema_v2)
-
-        register_data = requests.get(urljoin(endpoint, 'register.json'))
-        register_fields = register_data.json()['register-record']['fields']
 
         assert '_id' in record_json
         assert set(record_json.keys() - ['_id']).issubset(register_fields), \
@@ -100,8 +103,8 @@ class TestRecordResourceCsvV2(object):
         assert parse_options_header(response.headers['content-type']) \
                == ('text/csv', {'charset': 'UTF-8'})
 
-    def test_response_contents(self, response, endpoint):
-        csv_schema = get_schema_v2(endpoint)
+    def test_response_contents(self, response, endpoint, register_fields):
+        csv_schema = get_schema_v2(register_fields)
         problems = csv_schema.validate(csv.reader(response.text.split('\r\n')))
 
         assert problems == [], \
@@ -123,10 +126,8 @@ def get_schema_v1(endpoint):
     return validator
 
 
-def get_schema_v2(endpoint):
+def get_schema_v2(register_fields):
     field_names = ['_id']
-    register_data = requests.get(urljoin(endpoint, 'register.json'))
-    register_fields = register_data.json()['register-record']['fields']
     field_names += register_fields
 
     validator = CSVValidator(field_names)
