@@ -7,6 +7,7 @@ from csvvalidator import *
 from urllib.parse import urljoin
 from werkzeug.http import parse_options_header
 from jsonschema import validate
+from .conftest import get_register_fields
 
 
 class ResourceTestBase:
@@ -31,9 +32,13 @@ class ResourceTestBase:
         return requests.get(urljoin(endpoint, 'blobs/%s.%s' % (blob_hash, self.resource_type)))
 
     @pytest.fixture
-    def register_fields(self, endpoint):
+    def register_fields_v1(self, endpoint):
         register_data = requests.get(urljoin(endpoint, 'register.json'))
         return register_data.json()['register-record']['fields']
+
+    @pytest.fixture
+    def register_fields_v2(self, endpoint):
+        return get_register_fields(endpoint)
 
 
 @pytest.mark.version(1)
@@ -55,15 +60,12 @@ class TestItemResourceJsonV1(ResourceTestBase):
 class TestItemResourceJsonV2(ResourceTestBase):
     resource_type = 'json'
 
-    def test_response_contents(self, blob_response, blob_schema, endpoint):
-        register_data = requests.get(urljoin(endpoint, 'register.json'))
-        register_fields = register_data.json()['register-record']['fields']
-
+    def test_response_contents(self, blob_response, blob_schema, register_fields_v2):
         blob = blob_response.json()
         blob_keys = set(blob.keys() - ['_id'])
         validate(blob, blob_schema)
 
-        assert blob_keys.issubset(register_fields), 'Blob json does not match fields specified in the register definition'
+        assert blob_keys.issubset(register_fields_v2), 'Blob json does not match fields specified in the register definition'
 
     def test_content_type(self, blob_response):
         assert blob_response.headers['content-type'] == 'application/json'
@@ -78,7 +80,7 @@ class TestItemResourceJsonV2(ResourceTestBase):
 class TestItemResourceCsv(ResourceTestBase):
     resource_type = 'csv'
 
-    def test_response_contents(self, item_response, endpoint, register_fields):
+    def test_response_contents(self, item_response, endpoint, register_fields_v1):
         csv_schema = CSVValidator(register_fields)
         csv_schema.add_header_check()
         problems = csv_schema.validate(csv.reader(item_response.text.split('\r\n')))
@@ -95,10 +97,10 @@ class TestItemResourceCsv(ResourceTestBase):
 class TestItemResourceCsv(ResourceTestBase):
     resource_type = 'csv'
 
-    def test_response_contents(self, blob_response, register_fields, endpoint):
+    def test_response_contents(self, blob_response, register_fields_v2, endpoint):
         response = requests.get(urljoin(endpoint, 'blobs.csv'))
 
-        validator = CSVValidator(['_id'] + register_fields)
+        validator = CSVValidator(['_id'] + register_fields_v2)
         validator.add_header_check()
 
         problems = validator.validate(csv.reader(response.text.split('\r\n')))

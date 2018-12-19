@@ -7,15 +7,15 @@ from csvvalidator import CSVValidator
 from urllib.parse import urljoin
 from jsonschema import validate
 from multihash import multihash
+from .conftest import get_register_fields
+
 
 @pytest.fixture
 def register_fields(endpoint):
     '''
     Ask the register for its fields
-    TODO: this will be superseded by the context endpoint in V2
     '''
-    register_data = requests.get(urljoin(endpoint, 'register.json'))
-    return register_data.json()['register-record']['fields']
+    return get_register_fields(endpoint)
 
 
 @pytest.mark.version(2)
