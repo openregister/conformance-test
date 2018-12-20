@@ -108,9 +108,9 @@ STATISTICS = {
     'properties': {
         'total-records': {'type': 'integer'},
         'total-entries': {'type': 'integer'},
-        'total-items': {'type': 'integer'}
+        'total-blobs': {'type': 'integer'}
     },
-    'required': ['total-records', 'total-entries', 'total-items']
+    'required': ['total-records', 'total-entries', 'total-blobs']
 }
 
 STATUS = {
