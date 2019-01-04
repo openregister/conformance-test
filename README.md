@@ -11,13 +11,13 @@ Usage:
 
 Example of running tests against `localhost`:
 ```
-openregister-conformance --no-https --register school --register-domain openregister.local:8080  --api-version 1 http://localhost:8080/v1/
+openregister-conformance --no-https --register country --register-domain openregister.local:8080  --api-version 1 http://localhost:8080/v1/
 ```
 
 The `api-version` option should be set to the version of the [specification][] you want to test against. For example, to test against version 2, run:
 
 ```
-openregister-conformance --no-https --register school --register-domain openregister.org:8080  --api-version 2 http://localhost:8080/next/
+openregister-conformance --no-https --register country --register-domain openregister.org:8080  --api-version 2 http://localhost:8080/next/
 ```
 
 There may be tests for future work that has not been implemented yet.
